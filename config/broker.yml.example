@@ -1,0 +1,32 @@
+# credentials for Cloud Controller to authenticate with the broker
+basic_auth:
+  username: admin
+  password: admin
+
+catalog:
+  services:
+    - id: 33d2eeb0-0236-4c83-b494-da3faeb5b2e8
+      name: riak-cs
+      description: An S3-compatible open source storage built on top of Riak.
+      bindable: true
+      tags:
+        - blobstore
+      metadata:
+        displayName: Riak CS Storage
+        imageUrl: http://www.linux.com/news/galleries/image/riak-cs%3Fformat%3Dimage%26thumbnail%3Dsmall
+        longDescription: Provisioning the service creates a Riak CS bucket. Binding an application creates unique credentials for that application to access the bucket.
+        providerDisplayName: Riak CS
+        documentationUrl: https://github.com/cf-blobstore-eng/cf-riak-cs-service-broker
+        supportUrl: https://github.com/cf-blobstore-eng/cf-riak-cs-service-broker/issues
+      plans:
+        - id: 946ce484-376b-41b4-8c4e-4bc830676115
+          name: bucket
+          description: A bucket on Riak CS.
+          metadata:
+            bullets:
+              - Buckets are private
+            costs:
+              - amount:
+                  usd: 0.0
+                unit: MONTHLY
+            displayName: Bucket
