@@ -3,15 +3,14 @@ require 'yaml'
 module RiakCsBroker
   module Config
     def self.[](key)
-      @config[key]
+      load_config[key]
     end
 
     def self.load_config(filename = default_filename)
       @config ||= if File.exists?(filename)
                     YAML.load_file(filename)
                   else
-                    $stderr.puts "ERROR: No configuration file found at #{filename}."
-                    {}
+                    raise "ERROR: No configuration file found at #{filename}."
                   end
     end
 
