@@ -33,7 +33,7 @@ To run integration tests that actually talk to the Riak CS cluster specified in 
 
 ### Usage 
 
-The [broker.yml.example](config/broker.yml.example) file provides a template for your broker configuration.
+The [broker.example.yml](config/broker.example.yml) file provides a template for your broker configuration.
 Copy it, rename it to `broker.yml`, and make changes accordingly.
 
 Start the Riak CS Service Broker:
