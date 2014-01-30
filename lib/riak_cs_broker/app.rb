@@ -6,6 +6,7 @@ Bundler.require(:default, ENV["RACK_ENV"].to_sym)
 
 $:.unshift(File.expand_path('../../', __FILE__))
 require 'riak_cs_broker/config'
+require 'riak_cs_broker/service_instances'
 
 module RiakCsBroker
   class App < Sinatra::Base
@@ -19,6 +20,22 @@ module RiakCsBroker
 
     get '/v2/catalog' do
       RiakCsBroker::Config['catalog'].to_json
+    end
+
+    put '/v2/service_instances/:id' do
+      if instances.include?(params[:id])
+        status 409
+      else
+        instances.add(params[:id])
+        status 201
+      end
+      "{}"
+    end
+
+    private
+
+    def instances
+      @@instances ||= ServiceInstances.new(Config['riak-cs'])
     end
   end
 end

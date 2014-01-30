@@ -8,7 +8,7 @@ module RiakCsBroker
 
     def self.load_config(filename = default_filename)
       @config ||= if File.exists?(filename)
-                    YAML.load_file(filename)
+                    YAML.load(ERB.new(File.read(filename)).result)
                   else
                     raise "ERROR: No configuration file found at #{filename}."
                   end

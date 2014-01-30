@@ -30,3 +30,10 @@ catalog:
                   usd: 0.0
                 unit: MONTHLY
             displayName: Bucket
+
+riak-cs:
+  host: PLACEHOLDER
+  port: 8080
+  scheme: http
+  aws_access_key_id: PLACEHOLDER
+  aws_secret_access_key: PLACEHOLDER
