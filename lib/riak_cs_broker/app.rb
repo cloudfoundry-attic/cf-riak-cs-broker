@@ -23,13 +23,18 @@ module RiakCsBroker
     end
 
     put '/v2/service_instances/:id' do
-      if instances.include?(params[:id])
-        status 409
-      else
-        instances.add(params[:id])
-        status 201
+      begin
+        if instances.include?(params[:id])
+          status 409
+        else
+          instances.add(params[:id])
+          status 201
+        end
+        "{}"
+      rescue RiakCsBroker::ServiceInstances::ClientError => e
+        status 500
+        {description: e.message}.to_json
       end
-      "{}"
     end
 
     private

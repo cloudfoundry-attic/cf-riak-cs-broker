@@ -14,6 +14,23 @@ This service broker must be configured to access a Riak CS cluster.
 You can use Bosh to deploy such a cluster alongside Cloud Foundry, or it can be deployed locally by [bosh-lite](https://github.com/cloudfoundry/bosh-lite) for development purposes.
 A Bosh release for Riak and Riak CS can be found [here](https://github.com/cf-blobstore-eng/riak-release).
 
+### Testing
+
+The `spec/config/broker.yml` file used during testing extracts riak-cs configuration values from environment variables:
+
+```
+  host: <%= ENV["RIAK_CS_HOST"] %>
+  port: <%= ENV["RIAK_CS_PORT"] %>
+  scheme: <%= ENV["RIAK_CS_SCHEME"] %>
+  aws_access_key_id: <%= ENV["RIAK_CS_ACCESS_KEY_ID"] %>
+  aws_secret_access_key: <%= ENV["RIAK_CS_SECRET_ACCESS_KEY"] %>
+```
+These environment variables must be set prior to running the tests.
+
+To run all non-integration specs: `rake spec`
+
+To run integration tests that actually talk to the Riak CS cluster specified in `spec/config/broker.yml`: `rake spec:integration`
+
 ### Usage 
 
 The [broker.yml.example](config/broker.yml.example) file provides a template for your broker configuration.
