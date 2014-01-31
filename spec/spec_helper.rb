@@ -1,9 +1,7 @@
 ENV["RACK_ENV"] = "test"
-require File.expand_path('../../lib/riak_cs_broker/config', __FILE__)
-RiakCsBroker::Config.load_config(File.expand_path('../config/broker.yml', __FILE__))
 
 require File.expand_path('../../lib/riak_cs_broker/app', __FILE__)
-require File.expand_path('../helpers/riak_cs_integration_spec_helper', __FILE__)
+Dir[File.dirname(__FILE__) + '/helpers/*.rb'].each {|file| require file }
 
 module RiakCsBrokerApp
   def app
@@ -25,7 +23,7 @@ RSpec.configure do |config|
   config.order = 'random'
 
   config.before(:each, :authenticated) do
-    authorize RiakCsBroker::Config['basic_auth']['username'], RiakCsBroker::Config['basic_auth']['password']
+    authorize RiakCsBroker::Config.basic_auth[:username], RiakCsBroker::Config.basic_auth[:password]
   end
 
   config.before(:each) do |c|

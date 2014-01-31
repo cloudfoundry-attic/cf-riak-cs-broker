@@ -2,6 +2,7 @@ source "https://rubygems.org"
 
 gem 'fog', :git => 'https://github.com/cf-blobstore-eng/fog'
 gem 'sinatra'
+gem 'dotenv'
 
 group :test do
   gem 'rake'

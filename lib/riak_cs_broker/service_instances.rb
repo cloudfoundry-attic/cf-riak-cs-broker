@@ -12,7 +12,16 @@ module RiakCsBroker
     }
 
     def initialize(options = {})
-      @client = Fog::Storage.new(FOG_OPTIONS.merge(options))
+      @client = Fog::Storage.new({
+                                           provider: FOG_OPTIONS[:provider],
+                                           path_style: FOG_OPTIONS[:path_style],
+                                           host: options[:host],
+                                           port: options[:port],
+                                           scheme: options[:scheme] || FOG_OPTIONS[:scheme],
+                                           aws_access_key_id: options[:access_key_id],
+                                           aws_secret_access_key: options[:secret_access_key]
+                                         }
+      )
     rescue => e
       raise ClientError.new("#{e.class}: #{e.message}")
     end

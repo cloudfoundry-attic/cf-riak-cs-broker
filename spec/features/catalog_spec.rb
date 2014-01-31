@@ -1,40 +1,41 @@
 require "spec_helper"
 
 describe "The service broker catalog" do
-  before(:each) do
+  subject do
     get "/v2/catalog"
   end
 
   it "returns an Unauthorized HTTP response" do
-    last_response.status.should == 401
+    subject.status.should == 401
   end
 
   context "when authenticated", :authenticated do
     it "should include a list of services" do
-      last_response.body.should have_json_path("services")
+      subject.body.should have_json_path("services")
     end
 
     it "should include a service GUID" do
-      last_response.body.should have_json_path("services/0/id")
+      subject.body.should have_json_path("services/0/id")
     end
 
     it "should include a service name" do
-      last_response.body.should have_json_path("services/0/name")
+      subject.body.should have_json_path("services/0/name")
     end
 
     it "should include a service description" do
-      last_response.body.should have_json_path("services/0/description")
+      subject.body.should have_json_path("services/0/description")
     end
 
     it "should include a service bindable" do
-      last_response.body.should have_json_path("services/0/bindable")
+      subject.body.should have_json_path("services/0/bindable")
     end
 
     it "should include one plan" do
-      last_response.body.should have_json_size(1).at_path("services/0/plans")
+      subject.body.should have_json_size(1).at_path("services/0/plans")
     end
 
     it "should include a plan for Bucket" do
+      subject
       last_response.body.should have_json_path("services/0/plans/0/id")
       last_response.body.should have_json_path("services/0/plans/0/name")
       last_response.body.should have_json_path("services/0/plans/0/description")
@@ -43,6 +44,7 @@ describe "The service broker catalog" do
 
     context "when optional metadata is provided" do
       it "contains proper metadata when it is (optionally) provided" do
+        subject
         last_response.body.should have_json_path("services/0/metadata")
 
         last_response.body.should have_json_path("services/0/plans/0/metadata")

@@ -16,7 +16,7 @@ A Bosh release for Riak and Riak CS can be found [here](https://github.com/cf-bl
 
 ### Testing
 
-The `spec/config/broker.yml` file used during testing extracts riak-cs configuration values from environment variables:
+Riak CS configuration values are read from environment variables:
 
 ```
   host: <%= ENV["RIAK_CS_HOST"] %>
@@ -27,14 +27,16 @@ The `spec/config/broker.yml` file used during testing extracts riak-cs configura
 ```
 These environment variables must be set prior to running the tests.
 
+We use the [dotenv gem](https://github.com/bkeepers/dotenv), which allows you to set those values either by setting environment variables, or by specifying them in a `.env` file.
+
 To run all non-integration specs: `rake spec`
 
-To run integration tests that actually talk to the Riak CS cluster specified in `spec/config/broker.yml`: `rake spec:integration`
+To run integration tests that actually talk to the Riak CS cluster specified by the environment variables: `rake spec:integration`
 
 ### Usage 
 
-The [broker.example.yml](config/broker.example.yml) file provides a template for your broker configuration.
-Copy it, rename it to `broker.yml`, and make changes accordingly.
+The [.env.example](.env.example) file provides a template for your broker configuration.
+Copy it, rename it to `.env`, and make changes accordingly.
 
 Start the Riak CS Service Broker:
 

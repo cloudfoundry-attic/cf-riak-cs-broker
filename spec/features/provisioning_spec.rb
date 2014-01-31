@@ -8,13 +8,14 @@ describe "Provisioning a Riak CS service instance" do
     put "/v2/service_instances/#{id}"
   end
 
-
   it "returns an Unauthorized HTTP response" do
     make_request
     last_response.status.should == 401
   end
 
   context "when authenticated", :authenticated do
+    it_behaves_like "an endpoint that handles errors caused by missing config"
+
     it "returns a Created HTTP response" do
       make_request
       last_response.status.should == 201

@@ -4,7 +4,7 @@ describe RiakCsBroker::ServiceInstances do
   class MyError < StandardError
   end
 
-  let(:service_instances) { described_class.new(RiakCsBroker::Config['riak-cs']) }
+  let(:service_instances) { described_class.new(RiakCsBroker::Config.riak_cs) }
 
   describe "#initialize" do
     it "raises a ClientError if the client fails to initialize" do
