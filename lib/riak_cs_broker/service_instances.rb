@@ -66,7 +66,9 @@ module RiakCsBroker
       add_user_to_bucket_acl(bucket_name(instance_id), user_id)
 
       {
-        uri: bucket_uri(instance_id, user_key, user_secret)
+        uri: bucket_uri(instance_id, user_key, user_secret),
+        access_key_id: user_key,
+        secret_access_key: user_secret
       }
     rescue Fog::RiakCS::Provisioning::UserAlreadyExists => e
       raise BindingAlreadyExists.new("Attempted to create a Riak CS user for #{binding_id}, but couldn't: #{e.message}.")

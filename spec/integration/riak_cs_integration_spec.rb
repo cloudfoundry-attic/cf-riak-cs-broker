@@ -31,8 +31,8 @@ describe "Integration with a Riak CS cluster" do
       put "/v2/service_instances/#{instance_id}/service_bindings/#{binding_id}"
 
       binding_response = last_response.body
-      expect(binding_response).to include_a_writeable_bucket_uri
-      expect(binding_response).to include_a_readable_bucket_uri
+      expect(binding_response).to include_a_writeable_bucket_uri_at('credentials/uri')
+      expect(binding_response).to include_a_readable_bucket_uri_at('credentials/uri')
     end
   end
 end

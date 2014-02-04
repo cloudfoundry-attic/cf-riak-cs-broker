@@ -1,7 +1,12 @@
 module BucketURIParsing
-  def bucket_uri_from_response_body(response_body)
-    response_hash = JSON.parse(response_body)
-    URI.parse(response_hash['credentials']['uri'])
+  include JsonSpec::Helpers
+
+  def bucket_uri_from_response_body(response_body, json_path)
+    url = parse_json(response_body, json_path)
+    URI.parse(url)
+  rescue JsonSpec::MissingPath => e
+    @bad_json_error = e
+    nil
   rescue URI::BadURIError => e
     @bad_uri_error = e
     nil
@@ -27,11 +32,11 @@ RSpec::Matchers.define :be_a_bucket do
   end
 end
 
-RSpec::Matchers.define :include_a_writeable_bucket_uri do
+RSpec::Matchers.define :include_a_writeable_bucket_uri_at do |json_path|
   include BucketURIParsing
 
   match do |binding_response|
-    if (bucket_uri = bucket_uri_from_response_body(binding_response))
+    if (bucket_uri = bucket_uri_from_response_body(binding_response, json_path))
       fog_client  = fog_client_from_bucket_uri(bucket_uri)
       bucket_name = bucket_name_from_uri(bucket_uri)
       begin
@@ -44,8 +49,10 @@ RSpec::Matchers.define :include_a_writeable_bucket_uri do
   end
 
   failure_message_for_should do |binding_response|
-    message = "expected #{binding_response} to contain a writeable bucket URI"
-    if @bad_uri_error
+    message = "expected #{binding_response} to contain a writeable bucket URI at #{json_path}"
+    if @bad_json_error
+      message << " but could not find the URL: #{@bad_json_error.message}"
+    elsif @bad_uri_error
       message << " but could not parse the URI: #{@bad_uri_error.message}"
     elsif @writing_error
       message << " but could not write to the bucket: #{@writing_error.message}"
@@ -54,11 +61,11 @@ RSpec::Matchers.define :include_a_writeable_bucket_uri do
   end
 end
 
-RSpec::Matchers.define :include_a_readable_bucket_uri do
+RSpec::Matchers.define :include_a_readable_bucket_uri_at do |json_path|
   include BucketURIParsing
 
   match do |binding_response|
-    if (bucket_uri = bucket_uri_from_response_body(binding_response))
+    if (bucket_uri = bucket_uri_from_response_body(binding_response, json_path))
       fog_client  = fog_client_from_bucket_uri(bucket_uri)
       bucket_name = bucket_name_from_uri(bucket_uri)
       begin
@@ -71,8 +78,10 @@ RSpec::Matchers.define :include_a_readable_bucket_uri do
   end
 
   failure_message_for_should do |binding_response|
-    message = "expected #{binding_response} to contain a readable bucket URI"
-    if @bad_uri_error
+    message = "expected #{binding_response} to contain a readable bucket URI at #{json_path}"
+    if @bad_json_error
+      message << " but could not find the URL: #{@bad_json_error.message}"
+    elsif @bad_uri_error
       message << " but could not parse the URI: #{@bad_uri_error.message}"
     elsif @reading_error
       message << " but could not list the bucket: #{@reading_error.message}"

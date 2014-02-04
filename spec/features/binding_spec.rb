@@ -34,6 +34,8 @@ describe "Binding a Riak CS service instance" do
           it "returns a JSON object containing credentials" do
             make_request
             last_response.body.should have_json_path('credentials/uri')
+            last_response.body.should have_json_path('credentials/access_key_id')
+            last_response.body.should have_json_path('credentials/secret_access_key')
           end
         end
 
