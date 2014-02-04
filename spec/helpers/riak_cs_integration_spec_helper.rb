@@ -2,8 +2,8 @@ require 'fog'
 
 module RiakCsIntegrationSpecHelper
   class << self
-    def bucket_exists?(bucket_name)
-      !fog_client.directories.get(bucket_name).nil?
+    def fog_client(options = {})
+      Fog::Storage.new(fog_options.merge(riak_cs_credentials).merge(options))
     end
 
     private
@@ -23,10 +23,6 @@ module RiakCsIntegrationSpecHelper
         aws_access_key_id: ENV["RIAK_CS_ACCESS_KEY_ID"],
         aws_secret_access_key: ENV["RIAK_CS_SECRET_ACCESS_KEY"]
       }
-    end
-
-    def fog_client
-      Fog::Storage.new(fog_options.merge(riak_cs_credentials))
     end
   end
 end

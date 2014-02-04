@@ -23,25 +23,13 @@ A Bosh release for Riak and Riak CS can be found [here](https://github.com/cf-bl
 
 ### Testing
 
-Riak CS configuration values are read from environment variables:
-
-```
-  host: <%= ENV["RIAK_CS_HOST"] %>
-  port: <%= ENV["RIAK_CS_PORT"] %>
-  scheme: <%= ENV["RIAK_CS_SCHEME"] %>
-  aws_access_key_id: <%= ENV["RIAK_CS_ACCESS_KEY_ID"] %>
-  aws_secret_access_key: <%= ENV["RIAK_CS_SECRET_ACCESS_KEY"] %>
-```
-These environment variables must be set prior to running the tests.
-
-We use the [dotenv gem](https://github.com/bkeepers/dotenv), which allows you to set those values either by setting environment variables, or by specifying them in a `.env` file.
-
 To run all non-integration specs: `rake spec`
 
 To run integration tests that actually talk to the Riak CS cluster specified by the environment variables: `rake spec:integration`
 
 ### Usage 
 
+We use the [dotenv gem](https://github.com/bkeepers/dotenv), which allows you to set those values either by setting environment variables, or by specifying them in a `.env` file.
 The [.env.example](.env.example) file provides a template for your broker configuration.
 Copy it, rename it to `.env`, and make changes accordingly.
 

@@ -1,9 +1,8 @@
-require 'json'
-require 'dotenv'
-
-require 'bundler/setup'
 ENV["RACK_ENV"] ||= "development"
+require 'bundler/setup'
 Bundler.require(:default, ENV["RACK_ENV"].to_sym)
+
+require 'json'
 
 $:.unshift(File.expand_path('../../', __FILE__))
 require 'riak_cs_broker/config'
@@ -40,10 +39,29 @@ module RiakCsBroker
       end
     end
 
-    private
+    put '/v2/service_instances/:id/service_bindings/:binding_id' do
+      begin
+        credentials = instances.bind(params[:id], params[:binding_id])
+        status 201
+        {"credentials" => credentials}.to_json
+      rescue ServiceInstances::InstanceNotFoundError => e
+        logger.info("Could not bind a nonexistent instance for #{params[:id]}")
+        status 404
+      rescue ServiceInstances::BindingAlreadyExists => e
+        logger.info("Could not bind because of a conflict: #{e.message}")
+        status 409
+      rescue ServiceInstances::ServiceUnavailable => e
+        logger.error("Service unavailable: #{e.message}")
+        status 503
+      end
+    end
 
     def instances
-        @@instances ||= ServiceInstances.new(Config.riak_cs)
+      @instances ||= ServiceInstances.new(Config.riak_cs)
+    end
+
+    def logger
+      @logger ||= Logger.new(STDOUT)
     end
   end
 end
