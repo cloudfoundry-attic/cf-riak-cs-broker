@@ -33,11 +33,11 @@ module RiakCsBroker
             "id" => "33d2eeb0-0236-4c83-b494-da3faeb5b2e8",
             "metadata" => {
               "displayName" => "Riak CS Storage",
-              "documentationUrl" => "https://github.com/cf-blobstore-eng/cf-riak-cs-service-broker",
+              "documentationUrl" => "https://github.com/cloudfoundry/cf-riak-cs-broker",
               "imageUrl" => "http://www.linux.com/news/galleries/image/riak-cs%3Fformat%3Dimage%26thumbnail%3Dsmall",
               "longDescription" => "Provisioning the service creates a Riak CS bucket. Binding an application creates unique credentials for that application to access the bucket.",
               "providerDisplayName" => "Riak CS",
-              "supportUrl" => "https://github.com/cf-blobstore-eng/cf-riak-cs-service-broker/issues"
+              "supportUrl" => "https://github.com/cloudfoundry/cf-riak-cs-broker/issues"
             },
             "name" => "riak-cs",
             "plans" => [
