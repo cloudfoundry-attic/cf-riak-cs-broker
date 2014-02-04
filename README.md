@@ -1,5 +1,12 @@
 # Riak CS Service Broker for Cloud Foundry 
 
+### Build Status
+
+[![Build Status](https://travis-ci.org/cloudfoundry/cf-riak-cs-broker.png?branch=master)](https://travis-ci.org/cloudfoundry/cf-riak-cs-broker) (master)
+
+
+### Description
+
 This is a [Riak CS](http://basho.com/riak-cloud-storage/) service broker for the Cloud Foundry [v2 services API](http://docs.cloudfoundry.com/docs/running/architecture/services/api.html).
 
 This service broker allows users to provision instances of an S3-compatible storage service.
