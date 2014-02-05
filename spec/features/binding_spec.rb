@@ -1,13 +1,13 @@
 require 'securerandom'
 require 'spec_helper'
 
+def create_instance(id = instance_id)
+  put "/v2/service_instances/#{id}"
+end
+
 describe "Binding a Riak CS service instance" do
   let(:instance_id) { SecureRandom.uuid }
   let(:binding_id) { SecureRandom.uuid }
-
-  def create_instance(id = instance_id)
-    put "/v2/service_instances/#{id}"
-  end
 
   def make_request(id = instance_id, b_id = binding_id)
     put "/v2/service_instances/#{id}/service_bindings/#{b_id}"
@@ -20,6 +20,8 @@ describe "Binding a Riak CS service instance" do
 
   context "when authenticated", :authenticated do
     context "when the service instance exists" do
+      it_behaves_like "an endpoint that handles errors caused by missing config"
+
       before do
         create_instance
       end
@@ -47,6 +49,7 @@ describe "Binding a Riak CS service instance" do
           it "returns service not available" do
             make_request
             expect(last_response.status).to eq(503)
+            last_response.body.should be_json_eql("{}")
           end
         end
       end
@@ -59,7 +62,16 @@ describe "Binding a Riak CS service instance" do
         it "returns a Conflict HTTP response" do
           make_request
           last_response.status.should == 409
+          last_response.body.should be_json_eql("{}")
         end
+      end
+
+      context "when there are errors when accessing Riak CS" do
+        before do
+          RiakCsBroker::ServiceInstances.any_instance.stub(:bind).and_raise(RiakCsBroker::ServiceInstances::ClientError.new("some-error-message"))
+        end
+
+        it_behaves_like "an endpoint that handles errors when accessing Riak CS"
       end
     end
 
@@ -67,6 +79,71 @@ describe "Binding a Riak CS service instance" do
       it "returns Not Found" do
         make_request
         last_response.status.should == 404
+        last_response.body.should be_json_eql("{}")
+      end
+    end
+  end
+end
+
+describe "Unbinding a Riak CS service instance" do
+  let(:instance_id) { SecureRandom.uuid }
+  let(:binding_id) { SecureRandom.uuid }
+
+  def make_request(id = instance_id, b_id = binding_id)
+    delete "/v2/service_instances/#{id}/service_bindings/#{b_id}"
+  end
+
+  it "returns an Unauthorized HTTP response" do
+    make_request
+    last_response.status.should == 401
+  end
+
+  context "when authenticated", :authenticated do
+    context "when the service instance exists" do
+      it_behaves_like "an endpoint that handles errors caused by missing config"
+
+      before do
+        create_instance
+      end
+
+      context "when it is not bound" do
+        before do
+          RiakCsBroker::ServiceInstances.any_instance.stub(:unbind).and_raise(RiakCsBroker::ServiceInstances::BindingNotFoundError)
+        end
+
+        it "returns Not Found" do
+          make_request
+          expect(last_response.status).to eq(410)
+          expect(last_response.body).to be_json_eql('{}')
+        end
+      end
+
+      context "when it is already bound" do
+        before do
+          RiakCsBroker::ServiceInstances.any_instance.stub(:unbind)
+        end
+
+        it "returns OK with an empty body" do
+          make_request
+          expect(last_response.status).to eq(200)
+          expect(last_response.body).to be_json_eql('{}')
+        end
+
+        context "when there are errors when accessing Riak CS" do
+          before do
+            RiakCsBroker::ServiceInstances.any_instance.stub(:unbind).and_raise(RiakCsBroker::ServiceInstances::ClientError.new("some-error-message"))
+          end
+
+          it_behaves_like "an endpoint that handles errors when accessing Riak CS"
+        end
+      end
+    end
+
+    context "when the service instance does not exist" do
+      it "returns Not Found" do
+        make_request
+        expect(last_response.status).to eq(410)
+        expect(last_response.body).to be_json_eql('{}')
       end
     end
   end

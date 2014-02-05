@@ -35,4 +35,19 @@ describe "Integration with a Riak CS cluster" do
       expect(binding_response).to include_a_readable_bucket_uri_at('credentials/uri')
     end
   end
+
+  describe "unbinding" do
+    let(:binding_id) { SecureRandom.uuid }
+
+    it "removes the user's access to the Riak CS bucket", :authenticated, :integration do
+      put "/v2/service_instances/#{instance_id}"
+      put "/v2/service_instances/#{instance_id}/service_bindings/#{binding_id}"
+
+      bucket_uri = bucket_uri_from_response_body!(last_response.body, 'credentials/uri')
+
+      expect {
+        delete "/v2/service_instances/#{instance_id}/service_bindings/#{binding_id}"
+      }.to remove_access_to_riak_cs(bucket_uri)
+    end
+  end
 end

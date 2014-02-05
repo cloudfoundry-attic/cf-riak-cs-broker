@@ -35,7 +35,7 @@ module RiakCsBroker
         "{}"
       rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
         status 500
-        {description: e.message}.to_json
+        { description: e.message }.to_json
       end
     end
 
@@ -43,16 +43,41 @@ module RiakCsBroker
       begin
         credentials = instances.bind(params[:id], params[:binding_id])
         status 201
-        {"credentials" => credentials}.to_json
+        { "credentials" => credentials }.to_json
       rescue ServiceInstances::InstanceNotFoundError => e
         logger.info("Could not bind a nonexistent instance for #{params[:id]}")
         status 404
+        "{}"
       rescue ServiceInstances::BindingAlreadyExists => e
         logger.info("Could not bind because of a conflict: #{e.message}")
         status 409
+        "{}"
       rescue ServiceInstances::ServiceUnavailable => e
         logger.error("Service unavailable: #{e.message}")
         status 503
+        "{}"
+      rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
+        status 500
+        { description: e.message }.to_json
+      end
+    end
+
+    delete '/v2/service_instances/:id/service_bindings/:binding_id' do
+      begin
+        instances.unbind(params[:id], params[:binding_id])
+        status 200
+        "{}"
+      rescue ServiceInstances::InstanceNotFoundError => e
+        logger.info("Could not unbind from a nonexistent instance #{params[:id]}")
+        status 410
+        "{}"
+      rescue ServiceInstances::BindingNotFoundError => e
+        logger.info("Could not find the binding #{params[:binding_id]}")
+        status 410
+        "{}"
+      rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
+        status 500
+        { description: e.message }.to_json
       end
     end
 

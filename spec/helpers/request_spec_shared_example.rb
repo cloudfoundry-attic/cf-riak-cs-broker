@@ -12,7 +12,19 @@ shared_examples_for "an endpoint that handles errors caused by missing config" d
     end
 
     it "returns a JSON response containing the error message" do
-      last_response.body.should be_json_eql({ description: "Riak CS is not configured."}.to_json)
+      last_response.body.should be_json_eql({description: "Riak CS is not configured."}.to_json)
     end
+  end
+end
+
+shared_examples_for "an endpoint that handles errors when accessing Riak CS" do
+  it "returns a 500 error code" do
+    make_request
+    last_response.status.should == 500
+  end
+
+  it "returns a JSON response containing the error message" do
+    make_request
+    last_response.body.should be_json_eql({ description: "some-error-message"}.to_json)
   end
 end

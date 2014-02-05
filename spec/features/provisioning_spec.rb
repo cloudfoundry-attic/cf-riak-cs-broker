@@ -34,21 +34,12 @@ describe "Provisioning a Riak CS service instance" do
       end
     end
 
-    context "when creating the bucket fails" do
-      before(:each) do
-        RiakCsBroker::ServiceInstances.any_instance.stub(:add).
-          and_raise(RiakCsBroker::ServiceInstances::ClientError.new("some-error-message"))
+    context "when there are errors when accessing Riak CS" do
+      before do
+        RiakCsBroker::ServiceInstances.any_instance.stub(:add).and_raise(RiakCsBroker::ServiceInstances::ClientError.new("some-error-message"))
       end
 
-      it "returns a 500 error code" do
-        make_request
-        last_response.status.should == 500
-      end
-
-      it "returns a JSON response containing the error message" do
-        make_request
-        last_response.body.should be_json_eql({ description: "some-error-message"}.to_json)
-      end
+      it_behaves_like "an endpoint that handles errors when accessing Riak CS"
     end
   end
 end

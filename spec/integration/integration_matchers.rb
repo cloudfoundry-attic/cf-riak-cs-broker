@@ -1,9 +1,13 @@
+def bucket_uri_from_response_body!(response_body, json_path)
+  url = parse_json(response_body, json_path)
+  URI.parse(url)
+end
+
 module BucketURIParsing
   include JsonSpec::Helpers
 
   def bucket_uri_from_response_body(response_body, json_path)
-    url = parse_json(response_body, json_path)
-    URI.parse(url)
+    bucket_uri_from_response_body!(response_body, json_path)
   rescue JsonSpec::MissingPath => e
     @bad_json_error = e
     nil
@@ -88,4 +92,45 @@ RSpec::Matchers.define :include_a_readable_bucket_uri_at do |json_path|
     end
     message
   end
+end
+
+class RemoveAccessToRiakCs
+  include BucketURIParsing
+
+  attr_reader :bucket_uri
+
+  def initialize(bucket_uri)
+    @bucket_uri = bucket_uri
+  end
+
+  def matches?(block)
+    fog_client = fog_client_from_bucket_uri(bucket_uri)
+    bucket_name = bucket_name_from_uri(bucket_uri)
+    begin
+      fog_client.put_object(bucket_name, "some-object", "some data")
+    rescue Excon::Errors::Forbidden => e
+      @writing_error = e
+    end
+    if @writing_error
+      false
+    else
+      block.call
+      begin
+        fog_client.put_object(bucket_name, "some-other-object", "some data")
+        false
+      rescue Excon::Errors::Forbidden
+        true
+      end
+    end
+  end
+
+  def failure_message_for_should
+    message = "expected block to remove existing Riak CS access"
+    message << " but never got access in the first place" if @writing_error
+    message
+  end
+end
+
+def remove_access_to_riak_cs(bucket_uri)
+  RemoveAccessToRiakCs.new(bucket_uri)
 end
