@@ -10,11 +10,11 @@ module RiakCsBroker
     end
     class InstanceNotFoundError < ClientError
     end
-    class BindingAlreadyExists < ClientError
+    class BindingAlreadyExistsError < ClientError
     end
     class BindingNotFoundError < ClientError
     end
-    class ServiceUnavailable < ClientError
+    class ServiceUnavailableError < ClientError
     end
 
     FOG_OPTIONS = {
@@ -45,7 +45,7 @@ module RiakCsBroker
       )
       @storage_client.directories.create(key: BINDING_BUCKET_NAME)
     rescue Excon::Errors::Timeout
-      raise ServiceUnavailable
+      raise ServiceUnavailableError
     rescue => e
       raise ClientError.new("#{e.class}: #{e.message}")
     end
@@ -53,7 +53,7 @@ module RiakCsBroker
     def add(instance_id)
       @storage_client.directories.create(key: bucket_name(instance_id))
     rescue Excon::Errors::Timeout
-      raise ServiceUnavailable
+      raise ServiceUnavailableError
     rescue => e
       raise ClientError.new("#{e.class}: #{e.message}")
     end
@@ -61,14 +61,14 @@ module RiakCsBroker
     def include?(instance_id)
       !@storage_client.directories.get(bucket_name(instance_id)).nil?
     rescue Excon::Errors::Timeout
-      raise ServiceUnavailable
+      raise ServiceUnavailableError
     rescue => e
       raise ClientError.new("#{e.class}: #{e.message}")
     end
 
     def bind(instance_id, binding_id)
       raise InstanceNotFoundError unless include?(instance_id)
-      raise BindingAlreadyExists.new("Binding for #{binding_id} already exists.") if bound?(binding_id)
+      raise BindingAlreadyExistsError.new("Binding for #{binding_id} already exists.") if bound?(binding_id)
 
       user_id, user_key, user_secret = create_user(binding_id)
       add_user_to_bucket_acl(bucket_name(instance_id), user_id)
@@ -79,17 +79,17 @@ module RiakCsBroker
         secret_access_key: user_secret
       }
     rescue Fog::RiakCS::Provisioning::UserAlreadyExists => e
-      raise BindingAlreadyExists.new("Attempted to create a Riak CS user for #{binding_id}, but couldn't: #{e.message}.")
+      raise BindingAlreadyExistsError.new("Attempted to create a Riak CS user for #{binding_id}, but couldn't: #{e.message}.")
     rescue Fog::RiakCS::Provisioning::ServiceUnavailable => e
-      raise ServiceUnavailable.new("Riak CS unavailable: #{e.message}")
+      raise ServiceUnavailableError.new("Riak CS unavailable: #{e.message}")
     rescue Excon::Errors::Timeout
-      raise ServiceUnavailable
+      raise ServiceUnavailableError
     end
 
     def bound?(binding_id)
       user_id_from_binding_id(binding_id)
     rescue Excon::Errors::Timeout
-      raise ServiceUnavailable
+      raise ServiceUnavailableError
     end
 
     def unbind(instance_id, binding_id)
@@ -100,7 +100,7 @@ module RiakCsBroker
       delete_user_from_bucket_acl(bucket_name(instance_id), user_id)
       delete_binding_id_to_user_id_mapping(binding_id)
     rescue Excon::Errors::Timeout
-      raise ServiceUnavailable
+      raise ServiceUnavailableError
     end
 
     def bucket_name(bucket_id)

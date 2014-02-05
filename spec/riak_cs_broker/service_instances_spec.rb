@@ -31,7 +31,7 @@ end
 
 shared_examples "it handles timeouts by raising ServiceUnavailable" do
   it "raises ServiceUnavailable" do
-    expect{ subject }.to raise_error(RiakCsBroker::ServiceInstances::ServiceUnavailable)
+    expect{ subject }.to raise_error(RiakCsBroker::ServiceInstances::ServiceUnavailableError)
   end
 end
 
@@ -161,7 +161,7 @@ describe RiakCsBroker::ServiceInstances do
         end
 
         it "should raise an error" do
-          expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::BindingAlreadyExists)
+          expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::BindingAlreadyExistsError)
         end
       end
 
@@ -171,7 +171,7 @@ describe RiakCsBroker::ServiceInstances do
         end
 
         it "raises BindingAlreadyExists" do
-          expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::BindingAlreadyExists)
+          expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::BindingAlreadyExistsError)
         end
       end
 
@@ -181,7 +181,7 @@ describe RiakCsBroker::ServiceInstances do
         end
 
         it "raises ServiceUnavailable" do
-          expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::ServiceUnavailable)
+          expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::ServiceUnavailableError)
         end
       end
 

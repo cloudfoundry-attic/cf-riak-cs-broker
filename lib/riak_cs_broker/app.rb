@@ -48,11 +48,11 @@ module RiakCsBroker
         logger.info("Could not bind a nonexistent instance for #{params[:id]}")
         status 404
         "{}"
-      rescue ServiceInstances::BindingAlreadyExists => e
+      rescue ServiceInstances::BindingAlreadyExistsError => e
         logger.info("Could not bind because of a conflict: #{e.message}")
         status 409
         "{}"
-      rescue ServiceInstances::ServiceUnavailable => e
+      rescue ServiceInstances::ServiceUnavailableError => e
         logger.error("Service unavailable: #{e.message}")
         status 503
         "{}"

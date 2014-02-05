@@ -43,7 +43,7 @@ describe "Binding a Riak CS service instance" do
 
         context "when binding is unsuccessful because the service is unavailable" do
           before do
-            RiakCsBroker::ServiceInstances.any_instance.stub(:bind).and_raise(RiakCsBroker::ServiceInstances::ServiceUnavailable)
+            RiakCsBroker::ServiceInstances.any_instance.stub(:bind).and_raise(RiakCsBroker::ServiceInstances::ServiceUnavailableError)
           end
 
           it "returns service not available" do
