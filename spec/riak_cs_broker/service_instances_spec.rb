@@ -64,24 +64,74 @@ describe RiakCsBroker::ServiceInstances do
     context "when bucket creation times out" do
       before do
         directories = double(:directories)
-        directories.stub(:create).with(key: service_instances.bucket_name("my-instance")).and_raise(Excon::Errors::Timeout)
+        directories.stub(:create).with(key: described_class.bucket_name("my-instance")).and_raise(Excon::Errors::Timeout)
         service_instances.storage_client.stub(:directories).and_return(directories)
       end
 
       it_behaves_like "it handles timeouts by raising ServiceUnavailable"
     end
 
-    it "stores requested service instances" do
+    it "stores the requested instance" do
       subject
       expect(service_instances.include?("my-instance")).to be_true
     end
 
     it "raises a ClientError if the client fails to create a bucket" do
       directories = double(:directories)
-      directories.stub(:create).with(key: service_instances.bucket_name("my-instance")).and_raise(MyError.new("some-error-message"))
+      directories.stub(:create).with(key: described_class.bucket_name("my-instance")).and_raise(MyError.new("some-error-message"))
       service_instances.storage_client.stub(:directories).and_return(directories)
 
       expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::ClientError, "MyError: some-error-message")
+    end
+  end
+
+  describe "#remove" do
+    subject { service_instances.remove("my-instance") }
+
+    context "when the instance exists" do
+      before do
+        service_instances.add("my-instance")
+      end
+
+      it "removes the requested instance" do
+        expect { subject }.to change { service_instances.include?("my-instance") }.from(true).to(false)
+      end
+
+      context "when the instance is not empty" do
+        before do
+          Fog::Storage::AWS::Mock.any_instance.stub_chain(:directories, :get).and_return(:anything)
+          Fog::Storage::AWS::Mock.any_instance.stub_chain(:directories, :create)
+          Fog::Storage::AWS::Mock.any_instance.stub_chain(:directories, :destroy).and_raise(Excon::Errors::Conflict.new(nil))
+        end
+
+        it "raises InstanceNotEmptyError" do
+          expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::InstanceNotEmptyError)
+        end
+      end
+
+      it "raises a ClientError if the client fails to destroy a bucket" do
+        directories = double(:directories).as_null_object
+        directories.stub(:destroy).with(described_class.bucket_name("my-instance")).and_raise(MyError.new("some-error-message"))
+        service_instances.storage_client.stub(:directories).and_return(directories)
+
+        expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::ClientError, "MyError: some-error-message")
+      end
+
+      context "when bucket removal times out" do
+        before do
+          directories = double(:directories).as_null_object
+          directories.stub(:destroy).with(described_class.bucket_name("my-instance")).and_raise(Excon::Errors::Timeout)
+          service_instances.storage_client.stub(:directories).and_return(directories)
+        end
+
+        it_behaves_like "it handles timeouts by raising ServiceUnavailable"
+      end
+    end
+
+    context "when the instance does not exist" do
+      it "raises InstanceNotFoundError" do
+        expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::InstanceNotFoundError)
+      end
     end
   end
 
@@ -148,7 +198,7 @@ describe RiakCsBroker::ServiceInstances do
 
         it "adds the user to the bucket ACL" do
           subject
-          acl = service_instances.storage_client.get_bucket_acl(service_instances.bucket_name("my-instance")).body
+          acl = service_instances.storage_client.get_bucket_acl(described_class.bucket_name("my-instance")).body
           expect(acl).to have_grant_for("user-id").with_permission("READ")
           expect(acl).to have_grant_for("user-id").with_permission("WRITE")
         end
@@ -191,6 +241,12 @@ describe RiakCsBroker::ServiceInstances do
         end
 
         it_behaves_like "it handles timeouts by raising ServiceUnavailable"
+      end
+
+      it "raises a ClientError if the client fails to create a bucket" do
+        service_instances.provision_client.stub(:create_user).and_raise(MyError.new("some-error-message"))
+
+        expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::ClientError, "MyError: some-error-message")
       end
     end
   end
@@ -271,7 +327,7 @@ describe RiakCsBroker::ServiceInstances do
         it "removes the user from the bucket ACL" do
           subject
 
-          acl = service_instances.storage_client.get_bucket_acl(service_instances.bucket_name("my-instance")).body
+          acl = service_instances.storage_client.get_bucket_acl(described_class.bucket_name("my-instance")).body
           expect(acl).not_to have_grant_for("user-id")
         end
 
@@ -281,6 +337,12 @@ describe RiakCsBroker::ServiceInstances do
           end
 
           it_behaves_like "it handles timeouts by raising ServiceUnavailable"
+        end
+
+        it "raises a ClientError if the client fails to create a bucket" do
+          service_instances.storage_client.stub(:get_bucket_acl).and_raise(MyError.new("some-error-message"))
+
+          expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::ClientError, "MyError: some-error-message")
         end
       end
     end

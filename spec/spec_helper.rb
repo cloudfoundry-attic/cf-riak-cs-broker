@@ -15,6 +15,7 @@ end
 RSpec.configure do |config|
   config.include Rack::Test::Methods
   config.include JsonSpec::Helpers
+  config.include RequestSpecHelpers
   config.include RiakCsBrokerApp
 
   config.treat_symbols_as_metadata_keys_with_true_values = true

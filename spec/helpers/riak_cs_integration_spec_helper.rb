@@ -6,6 +6,10 @@ module RiakCsIntegrationSpecHelper
       Fog::Storage.new(fog_options.merge(riak_cs_credentials).merge(options))
     end
 
+    def bucket_name(instance_id)
+      RiakCsBroker::ServiceInstances.bucket_name(instance_id)
+    end
+
     private
 
     def fog_options

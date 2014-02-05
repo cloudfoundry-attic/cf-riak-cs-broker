@@ -39,6 +39,23 @@ module RiakCsBroker
       end
     end
 
+    delete '/v2/service_instances/:id' do
+      begin
+        instances.remove(params[:id])
+        status 200
+        "{}"
+      rescue RiakCsBroker::ServiceInstances::InstanceNotEmptyError
+        status 409
+        "{}"
+      rescue RiakCsBroker::ServiceInstances::InstanceNotFoundError
+        status 410
+        "{}"
+      rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
+        status 500
+        { description: e.message }.to_json
+      end
+    end
+
     put '/v2/service_instances/:id/service_bindings/:binding_id' do
       begin
         credentials = instances.bind(params[:id], params[:binding_id])

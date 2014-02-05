@@ -1,10 +1,6 @@
 require 'securerandom'
 require 'spec_helper'
 
-def create_instance(id = instance_id)
-  put "/v2/service_instances/#{id}"
-end
-
 describe "Binding a Riak CS service instance" do
   let(:instance_id) { SecureRandom.uuid }
   let(:binding_id) { SecureRandom.uuid }

@@ -43,3 +43,60 @@ describe "Provisioning a Riak CS service instance" do
     end
   end
 end
+
+describe "Deprovisioning a Riak CS service instance" do
+  let(:instance_id) { SecureRandom.uuid }
+
+  def make_request(id = instance_id)
+    delete "/v2/service_instances/#{id}"
+  end
+
+  it "returns an Unauthorized HTTP response" do
+    make_request
+    last_response.status.should == 401
+  end
+
+  context "when authenticated", :authenticated do
+    it_behaves_like "an endpoint that handles errors caused by missing config"
+
+    context "when the instance exists" do
+      before do
+        create_instance
+      end
+
+      it "returns an OK HTTP response" do
+        make_request
+        last_response.status.should == 200
+        last_response.body.should be_json_eql("{}")
+      end
+
+      context "and deprovisioning a non-empty instance" do
+        before do
+          RiakCsBroker::ServiceInstances.any_instance.stub(:remove).and_raise(RiakCsBroker::ServiceInstances::InstanceNotEmptyError)
+        end
+
+        it "returns a Conflict HTTP response" do
+          make_request
+          last_response.status.should == 409
+          last_response.body.should be_json_eql("{}")
+        end
+      end
+    end
+
+    context "when the instance does not exist" do
+      it "returns Not Found" do
+        make_request
+        last_response.status.should == 410
+        last_response.body.should be_json_eql('{}')
+      end
+    end
+
+    context "when there are errors when accessing Riak CS" do
+      before do
+        RiakCsBroker::ServiceInstances.any_instance.stub(:remove).and_raise(RiakCsBroker::ServiceInstances::ClientError.new("some-error-message"))
+      end
+
+      it_behaves_like "an endpoint that handles errors when accessing Riak CS"
+    end
+  end
+end

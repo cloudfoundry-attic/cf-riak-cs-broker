@@ -8,6 +8,8 @@ module RiakCsBroker
 
     class ClientError < StandardError
     end
+    class InstanceNotEmptyError < ClientError
+    end
     class InstanceNotFoundError < ClientError
     end
     class BindingAlreadyExistsError < ClientError
@@ -51,15 +53,28 @@ module RiakCsBroker
     end
 
     def add(instance_id)
-      @storage_client.directories.create(key: bucket_name(instance_id))
+      @storage_client.directories.create(key: self.class.bucket_name(instance_id))
     rescue Excon::Errors::Timeout
       raise ServiceUnavailableError
     rescue => e
       raise ClientError.new("#{e.class}: #{e.message}")
     end
 
+    def remove(instance_id)
+      raise InstanceNotFoundError unless include?(instance_id)
+      begin
+        @storage_client.directories.destroy(self.class.bucket_name(instance_id))
+      rescue Excon::Errors::Conflict
+        raise InstanceNotEmptyError
+      rescue Excon::Errors::Timeout
+        raise ServiceUnavailableError
+      rescue => e
+        raise ClientError.new("#{e.class}: #{e.message}")
+      end
+    end
+
     def include?(instance_id)
-      !@storage_client.directories.get(bucket_name(instance_id)).nil?
+      !@storage_client.directories.get(self.class.bucket_name(instance_id)).nil?
     rescue Excon::Errors::Timeout
       raise ServiceUnavailableError
     rescue => e
@@ -70,20 +85,24 @@ module RiakCsBroker
       raise InstanceNotFoundError unless include?(instance_id)
       raise BindingAlreadyExistsError.new("Binding for #{binding_id} already exists.") if bound?(binding_id)
 
-      user_id, user_key, user_secret = create_user(binding_id)
-      add_user_to_bucket_acl(bucket_name(instance_id), user_id)
+      begin
+        user_id, user_key, user_secret = create_user(binding_id)
+        add_user_to_bucket_acl(self.class.bucket_name(instance_id), user_id)
 
-      {
-        uri:               bucket_uri(instance_id, user_key, user_secret),
-        access_key_id:     user_key,
-        secret_access_key: user_secret
-      }
-    rescue Fog::RiakCS::Provisioning::UserAlreadyExists => e
-      raise BindingAlreadyExistsError.new("Attempted to create a Riak CS user for #{binding_id}, but couldn't: #{e.message}.")
-    rescue Fog::RiakCS::Provisioning::ServiceUnavailable => e
-      raise ServiceUnavailableError.new("Riak CS unavailable: #{e.message}")
-    rescue Excon::Errors::Timeout
-      raise ServiceUnavailableError
+        {
+          uri:               bucket_uri(instance_id, user_key, user_secret),
+          access_key_id:     user_key,
+          secret_access_key: user_secret
+        }
+      rescue Fog::RiakCS::Provisioning::UserAlreadyExists => e
+        raise BindingAlreadyExistsError.new("Attempted to create a Riak CS user for #{binding_id}, but couldn't: #{e.message}.")
+      rescue Fog::RiakCS::Provisioning::ServiceUnavailable => e
+        raise ServiceUnavailableError.new("Riak CS unavailable: #{e.message}")
+      rescue Excon::Errors::Timeout
+        raise ServiceUnavailableError
+      rescue => e
+        raise ClientError.new("#{e.class}: #{e.message}")
+      end
     end
 
     def bound?(binding_id)
@@ -96,14 +115,18 @@ module RiakCsBroker
       raise InstanceNotFoundError unless include?(instance_id)
       raise BindingNotFoundError unless bound?(binding_id)
 
-      user_id = user_id_from_binding_id(binding_id)
-      delete_user_from_bucket_acl(bucket_name(instance_id), user_id)
-      delete_binding_id_to_user_id_mapping(binding_id)
-    rescue Excon::Errors::Timeout
-      raise ServiceUnavailableError
+      begin
+        user_id = user_id_from_binding_id(binding_id)
+        delete_user_from_bucket_acl(self.class.bucket_name(instance_id), user_id)
+        delete_binding_id_to_user_id_mapping(binding_id)
+      rescue Excon::Errors::Timeout
+        raise ServiceUnavailableError
+      rescue => e
+        raise ClientError.new("#{e.class}: #{e.message}")
+      end
     end
 
-    def bucket_name(bucket_id)
+    def self.bucket_name(bucket_id)
       "service-instance-#{bucket_id}"
     end
 
@@ -115,7 +138,7 @@ module RiakCsBroker
     end
 
     def bucket_uri(bucket_id, user_key, user_secret)
-      request_uri         = Addressable::URI.parse(@storage_client.request_url(bucket_name: bucket_name(bucket_id)))
+      request_uri         = Addressable::URI.parse(@storage_client.request_url(bucket_name: self.class.bucket_name(bucket_id)))
       bucket_uri_template = Addressable::Template.new("{scheme}://{key}:{secret}@{host}:{port}{/bucket_name}")
       bucket_uri_template.expand(
         scheme:      request_uri.scheme,
@@ -123,7 +146,7 @@ module RiakCsBroker
         secret:      user_secret,
         host:        request_uri.host,
         port:        request_uri.port,
-        bucket_name: bucket_name(bucket_id)
+        bucket_name: self.class.bucket_name(bucket_id)
       ).to_s
     end
 

@@ -19,7 +19,7 @@ describe "Integration with a Riak CS cluster" do
     it "creates a bucket in Riak CS", :authenticated, :integration do
       put "/v2/service_instances/#{instance_id}"
 
-      expect("service-instance-#{instance_id}").to be_a_bucket
+      expect(RiakCsIntegrationSpecHelper.bucket_name(instance_id)).to be_a_bucket
     end
   end
 
@@ -48,6 +48,15 @@ describe "Integration with a Riak CS cluster" do
       expect {
         delete "/v2/service_instances/#{instance_id}/service_bindings/#{binding_id}"
       }.to remove_access_to_riak_cs(bucket_uri)
+    end
+  end
+
+  describe "deprovisioning" do
+    it "deletes an empty bucket in Riak CS", :authenticated, :integration do
+      put "/v2/service_instances/#{instance_id}"
+      delete "/v2/service_instances/#{instance_id}"
+
+      expect(RiakCsIntegrationSpecHelper.bucket_name(instance_id)).not_to be_a_bucket
     end
   end
 end
