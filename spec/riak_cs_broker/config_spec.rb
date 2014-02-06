@@ -24,7 +24,7 @@ describe RiakCsBroker::Config do
       expect { RiakCsBroker::Config.riak_cs }.to_not raise_error
     end
 
-    it "raises an error if 'host', 'port', 'access_key_id', or 'secret_access_key' is missing" do
+    it "raises ConfigError if 'host', 'port', 'access_key_id', or 'secret_access_key' is missing" do
       ENV.stub(:[]).and_call_original
       ENV.stub(:[]).with('RIAK_CS_HOST').and_return nil
 

@@ -29,8 +29,8 @@ RSpec::Matchers.define :have_grant_for do |expected_user_key|
   end
 end
 
-shared_examples "it handles timeouts by raising ServiceUnavailable" do
-  it "raises ServiceUnavailable" do
+shared_examples "it handles timeouts by raising ServiceUnavailableError" do
+  it "raises ServiceUnavailableError" do
     expect{ subject }.to raise_error(RiakCsBroker::ServiceInstances::ServiceUnavailableError)
   end
 end
@@ -43,12 +43,12 @@ describe RiakCsBroker::ServiceInstances do
   subject { service_instances }
 
   describe "#initialize" do
-    context "when put_bucket times out" do
+    context "when bucket creation times out" do
       before do
         Fog::Storage::AWS::Mock.any_instance.stub_chain(:directories, :create).and_raise(Excon::Errors::Timeout)
       end
 
-      it_behaves_like "it handles timeouts by raising ServiceUnavailable"
+      it_behaves_like "it handles timeouts by raising ServiceUnavailableError"
     end
 
     it "raises a ClientError if the client fails to initialize" do
@@ -68,10 +68,10 @@ describe RiakCsBroker::ServiceInstances do
         service_instances.storage_client.stub(:directories).and_return(directories)
       end
 
-      it_behaves_like "it handles timeouts by raising ServiceUnavailable"
+      it_behaves_like "it handles timeouts by raising ServiceUnavailableError"
     end
 
-    it "stores the requested instance" do
+    it "creates the requested instance" do
       subject
       expect(service_instances.include?("my-instance")).to be_true
     end
@@ -124,7 +124,7 @@ describe RiakCsBroker::ServiceInstances do
           service_instances.storage_client.stub(:directories).and_return(directories)
         end
 
-        it_behaves_like "it handles timeouts by raising ServiceUnavailable"
+        it_behaves_like "it handles timeouts by raising ServiceUnavailableError"
       end
     end
 
@@ -144,7 +144,7 @@ describe RiakCsBroker::ServiceInstances do
         service_instances.storage_client.stub_chain(:directories, :get).and_raise(Excon::Errors::Timeout)
       end
 
-      it_behaves_like "it handles timeouts by raising ServiceUnavailable"
+      it_behaves_like "it handles timeouts by raising ServiceUnavailableError"
     end
 
     it "does not include any instances that were never created" do
@@ -166,7 +166,7 @@ describe RiakCsBroker::ServiceInstances do
     subject { service_instances.bind("my-instance", "some-binding-id") }
 
     context "when the instance does not exist" do
-      it "raises an error" do
+      it "raises InstanceNotFoundError" do
         expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::InstanceNotFoundError)
       end
     end
@@ -210,7 +210,7 @@ describe RiakCsBroker::ServiceInstances do
           service_instances.bind("some-other-instance", "some-binding-id")
         end
 
-        it "should raise an error" do
+        it "should raise BindingAlreadyExistsError" do
           expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::BindingAlreadyExistsError)
         end
       end
@@ -220,7 +220,7 @@ describe RiakCsBroker::ServiceInstances do
           service_instances.provision_client.stub(:create_user).and_raise(Fog::RiakCS::Provisioning::UserAlreadyExists)
         end
 
-        it "raises BindingAlreadyExists" do
+        it "raises BindingAlreadyExistsError" do
           expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::BindingAlreadyExistsError)
         end
       end
@@ -230,7 +230,7 @@ describe RiakCsBroker::ServiceInstances do
           service_instances.provision_client.stub(:create_user).and_raise(Fog::RiakCS::Provisioning::ServiceUnavailable)
         end
 
-        it "raises ServiceUnavailable" do
+        it "raises ServiceUnavailableError" do
           expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::ServiceUnavailableError)
         end
       end
@@ -240,7 +240,7 @@ describe RiakCsBroker::ServiceInstances do
           service_instances.provision_client.stub(:create_user).and_raise(Excon::Errors::Timeout)
         end
 
-        it_behaves_like "it handles timeouts by raising ServiceUnavailable"
+        it_behaves_like "it handles timeouts by raising ServiceUnavailableError"
       end
 
       it "raises a ClientError if the client fails to create a bucket" do
@@ -289,7 +289,7 @@ describe RiakCsBroker::ServiceInstances do
         service_instances.storage_client.stub_chain(:directories, :get, :files, :get).and_raise(Excon::Errors::Timeout)
       end
 
-      it_behaves_like "it handles timeouts by raising ServiceUnavailable"
+      it_behaves_like "it handles timeouts by raising ServiceUnavailableError"
     end
   end
 
@@ -297,7 +297,7 @@ describe RiakCsBroker::ServiceInstances do
     subject { service_instances.unbind("my-instance", "some-binding-id") }
 
     context "when the instance does not exist" do
-      it "raises an error" do
+      it "raises InstanceNotFoundError" do
         expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::InstanceNotFoundError)
       end
     end
@@ -308,7 +308,7 @@ describe RiakCsBroker::ServiceInstances do
       end
 
       context "when the binding doesn't exist" do
-        it "raises an error" do
+        it "raises BindingNotFoundError" do
           expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::BindingNotFoundError)
         end
       end
@@ -336,7 +336,7 @@ describe RiakCsBroker::ServiceInstances do
             service_instances.storage_client.stub(:get_bucket_acl).and_raise(Excon::Errors::Timeout)
           end
 
-          it_behaves_like "it handles timeouts by raising ServiceUnavailable"
+          it_behaves_like "it handles timeouts by raising ServiceUnavailableError"
         end
 
         it "raises a ClientError if the client fails to create a bucket" do
