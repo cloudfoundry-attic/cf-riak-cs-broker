@@ -2,6 +2,8 @@ ENV["RACK_ENV"] = "test"
 
 require File.expand_path('../../lib/riak_cs_broker/app', __FILE__)
 
+RiakCsBroker::App.set :logger, Logger.new("/dev/null")
+
 Dotenv.overload ".env.#{ENV['RACK_ENV']}"
 
 Dir[File.dirname(__FILE__) + '/helpers/*.rb'].each { |file| require file }

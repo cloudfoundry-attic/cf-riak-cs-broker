@@ -28,12 +28,15 @@ module RiakCsBroker
       begin
         if instances.include?(params[:id])
           status 409
+          logger.info("Could not provision #{params[:id]} because it already exists.")
         else
           instances.add(params[:id])
           status 201
         end
         "{}"
       rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
+        logger.error(e.message)
+        logger.error(e.backtrace)
         status 500
         { description: e.message }.to_json
       end
@@ -45,12 +48,16 @@ module RiakCsBroker
         status 200
         "{}"
       rescue RiakCsBroker::ServiceInstances::InstanceNotEmptyError
+        logger.info("Could not deprovision a non-empty instance #{params[:id]}")
         status 409
-        "{}"
+        { description: "Could not unprovision because instance is not empty" }.to_json
       rescue RiakCsBroker::ServiceInstances::InstanceNotFoundError
+        logger.info("Could not find the instance #{params[:id]}")
         status 410
         "{}"
       rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
+        logger.error(e.message)
+        logger.error(e.backtrace)
         status 500
         { description: e.message }.to_json
       end
@@ -64,7 +71,7 @@ module RiakCsBroker
       rescue ServiceInstances::InstanceNotFoundError => e
         logger.info("Could not bind a nonexistent instance for #{params[:id]}")
         status 404
-        "{}"
+        { description: "Could not bind a nonexistent instance for #{params[:id]}" }.to_json
       rescue ServiceInstances::BindingAlreadyExistsError => e
         logger.info("Could not bind because of a conflict: #{e.message}")
         status 409
@@ -72,8 +79,10 @@ module RiakCsBroker
       rescue ServiceInstances::ServiceUnavailableError => e
         logger.error("Service unavailable: #{e.message}")
         status 503
-        "{}"
+        { description: "Could not bind because service is unavailable" }.to_json
       rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
+        logger.error(e.message)
+        logger.error(e.backtrace)
         status 500
         { description: e.message }.to_json
       end
@@ -92,7 +101,13 @@ module RiakCsBroker
         logger.info("Could not find the binding #{params[:binding_id]}")
         status 410
         "{}"
+      rescue ServiceInstances::ServiceUnavailableError => e
+        logger.error("Service unavailable: #{e.message}")
+        status 503
+        { description: "Could not bind because service is unavailable" }.to_json
       rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
+        logger.error(e.message)
+        logger.error(e.backtrace)
         status 500
         { description: e.message }.to_json
       end
@@ -103,7 +118,9 @@ module RiakCsBroker
     end
 
     def logger
-      @logger ||= Logger.new(STDOUT)
+      settings.logger
     end
   end
+
+  App.set :logger, Logger.new(STDOUT)
 end

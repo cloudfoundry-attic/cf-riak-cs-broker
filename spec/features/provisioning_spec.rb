@@ -16,21 +16,18 @@ describe "Provisioning a Riak CS service instance" do
   context "when authenticated", :authenticated do
     it_behaves_like "an endpoint that handles errors caused by missing config"
 
-    it "returns a Created HTTP response" do
+    it "returns a 201 Created HTTP response with an empty JSON" do
       make_request
       last_response.status.should == 201
-    end
-
-    it "returns an empty JSON object" do
-      make_request
       last_response.body.should be_json_eql("{}")
     end
 
     context "and provisioning an existing instance" do
-      it "returns a Conflict HTTP response" do
+      it "returns a 409 Conflict HTTP response with an empty JSON" do
         make_request
         make_request
         last_response.status.should == 409
+        last_response.body.should be_json_eql("{}")
       end
     end
 
@@ -51,7 +48,7 @@ describe "Deprovisioning a Riak CS service instance" do
     delete "/v2/service_instances/#{id}"
   end
 
-  it "returns an Unauthorized HTTP response" do
+  it "returns an 401 Unauthorized HTTP response" do
     make_request
     last_response.status.should == 401
   end
@@ -64,7 +61,7 @@ describe "Deprovisioning a Riak CS service instance" do
         create_instance
       end
 
-      it "returns an OK HTTP response" do
+      it "returns a 200 OK HTTP response with an empty JSON" do
         make_request
         last_response.status.should == 200
         last_response.body.should be_json_eql("{}")
@@ -75,16 +72,16 @@ describe "Deprovisioning a Riak CS service instance" do
           RiakCsBroker::ServiceInstances.any_instance.stub(:remove).and_raise(RiakCsBroker::ServiceInstances::InstanceNotEmptyError)
         end
 
-        it "returns a Conflict HTTP response" do
+        it "returns a 409 Conflict HTTP response with an error message" do
           make_request
           last_response.status.should == 409
-          last_response.body.should be_json_eql("{}")
+          last_response.body.should be_json_eql({ description: "Could not unprovision because instance is not empty"}.to_json)
         end
       end
     end
 
     context "when the instance does not exist" do
-      it "returns Not Found" do
+      it "returns a 410 Not Found HTTP response with an empty JSON" do
         make_request
         last_response.status.should == 410
         last_response.body.should be_json_eql('{}')
