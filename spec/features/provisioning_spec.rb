@@ -72,9 +72,9 @@ describe "Deprovisioning a Riak CS service instance" do
           RiakCsBroker::ServiceInstances.any_instance.stub(:remove).and_raise(RiakCsBroker::ServiceInstances::InstanceNotEmptyError)
         end
 
-        it "returns a 409 Conflict HTTP response with an error message" do
+        it "returns a 500 Internal Error HTTP response with an error message" do
           make_request
-          last_response.status.should == 409
+          last_response.status.should == 500
           last_response.body.should be_json_eql({ description: "Could not unprovision because instance is not empty"}.to_json)
         end
       end
