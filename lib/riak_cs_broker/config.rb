@@ -28,7 +28,7 @@ module RiakCsBroker
       {
         "services" => [
           {
-            "bindable" => "true",
+            "bindable" => true,
             "description" => "An S3-compatible open source storage built on top of Riak.",
             "id" => "33d2eeb0-0236-4c83-b494-da3faeb5b2e8",
             "metadata" => {
