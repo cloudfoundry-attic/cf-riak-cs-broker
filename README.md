@@ -19,7 +19,7 @@ Based on [the Riak service broker by @hectcastro](https://github.com/hectcastro/
 
 This service broker must be configured to access a Riak CS cluster.
 You can use Bosh to deploy such a cluster alongside Cloud Foundry, or it can be deployed locally by [bosh-lite](https://github.com/cloudfoundry/bosh-lite) for development purposes.
-A Bosh release for Riak and Riak CS can be found [here](https://github.com/cf-blobstore-eng/riak-release).
+A Bosh release for Riak and Riak CS can be found [here](https://github.com/cloudfoundry/cf-riak-cs-release).
 
 ### Testing
 
