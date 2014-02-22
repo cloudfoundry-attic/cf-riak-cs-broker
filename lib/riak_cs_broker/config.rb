@@ -48,7 +48,7 @@ module RiakCsBroker
                   "bullets" => ["Buckets are private"],
                   "costs" => [
                     {
-                      "amount" => {"usd" => "0.0"},
+                      "amount" => {"usd" => 0.0},
                       "unit" => "MONTHLY"
                     }
                   ],
