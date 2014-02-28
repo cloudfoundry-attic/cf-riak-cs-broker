@@ -49,7 +49,7 @@ module RiakCsBroker
         "{}"
       rescue RiakCsBroker::ServiceInstances::InstanceNotEmptyError
         logger.info("Could not deprovision a non-empty instance #{params[:id]}")
-        status 500
+        status 409
         { description: "Could not unprovision because instance is not empty" }.to_json
       rescue RiakCsBroker::ServiceInstances::InstanceNotFoundError
         logger.info("Could not find the instance #{params[:id]}")
