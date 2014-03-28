@@ -3,13 +3,12 @@ require 'bundler/setup'
 Bundler.require(:default, ENV["RACK_ENV"].to_sym)
 
 require 'json'
-
+STDOUT.sync=true
 $:.unshift(File.expand_path('../../', __FILE__))
 require 'riak_cs_broker/config'
 require 'riak_cs_broker/service_instances'
 
 Dotenv.load
-
 module RiakCsBroker
   class App < Sinatra::Base
     use Rack::Auth::Basic, "Cloud Foundry Riak CS Service Broker" do |username, password|
@@ -18,6 +17,7 @@ module RiakCsBroker
 
     before do
       content_type "application/json"
+      Excon.defaults[:ssl_verify_peer] = Config.ssl_validation
     end
 
     get '/v2/catalog' do

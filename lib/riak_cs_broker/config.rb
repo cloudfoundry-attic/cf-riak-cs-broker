@@ -24,6 +24,10 @@ module RiakCsBroker
       riak_config
     end
 
+    def self.ssl_validation
+      ENV['RIAK_CS_SSL_VALIDATION'] == "true" ? true : false
+    end
+
     def self.catalog
       {
         "services" => [
