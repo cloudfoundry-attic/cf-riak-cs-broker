@@ -3,7 +3,8 @@ require 'bundler/setup'
 Bundler.require(:default, ENV["RACK_ENV"].to_sym)
 
 require 'json'
-STDOUT.sync=true
+$stderr.sync=true
+
 $:.unshift(File.expand_path('../../', __FILE__))
 require 'riak_cs_broker/config'
 require 'riak_cs_broker/service_instances'
@@ -18,6 +19,15 @@ module RiakCsBroker
     before do
       content_type "application/json"
       Excon.defaults[:ssl_verify_peer] = Config.ssl_validation
+      logger.info "Request:"
+      logger.info sanitized_request
+    end
+
+    after do
+      logger.info "Response Status:"
+      logger.info response.status
+      logger.info "Response Body"
+      logger.info response.body
     end
 
     get '/v2/catalog' do
@@ -120,7 +130,43 @@ module RiakCsBroker
     def logger
       settings.logger
     end
+
+    private
+    def sanitized_request
+      {
+        headers: filtered_request_headers,
+        body: request.body.string,
+        params: params
+      }
+    end
+
+    def filtered_request_headers
+      permitted_keys = %w(CONTENT_LENGTH
+        CONTENT_TYPE
+        GATEWAY_INTERFACE
+        PATH_INFO
+        QUERY_STRING
+        REMOTE_ADDR
+        REMOTE_HOST
+        REQUEST_METHOD
+        REQUEST_URI
+        SCRIPT_NAME
+        SERVER_NAME
+        SERVER_PORT
+        SERVER_PROTOCOL
+        SERVER_SOFTWARE
+        HTTP_ACCEPT
+        HTTP_USER_AGENT
+        HTTP_AUTHORIZATION
+        HTTP_X_VCAP_REQUEST_ID
+        HTTP_X_BROKER_API_VERSION
+        HTTP_HOST
+        HTTP_VERSION
+        REQUEST_PATH)
+
+      request.env.select { |key, val| permitted_keys.include? key }
+    end
   end
 
-  App.set :logger, Logger.new(STDOUT)
+  App.set :logger, Logger.new($stderr)
 end
