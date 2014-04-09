@@ -75,7 +75,7 @@ describe "Binding a Riak CS service instance" do
       it "returns 404 Not Found with an error message" do
         make_request
         last_response.status.should == 404
-        last_response.body.should be_json_eql({ description: "Could not bind a nonexistent instance for #{instance_id}" }.to_json)
+        last_response.body.should be_json_eql({ description: "Could not bind to an unknown service instance: #{instance_id}" }.to_json)
       end
 
     end

@@ -79,9 +79,9 @@ module RiakCsBroker
         status 201
         { "credentials" => credentials }.to_json
       rescue ServiceInstances::InstanceNotFoundError => e
-        logger.info("Could not bind a nonexistent instance for #{params[:id]}")
+        logger.info("Could not bind to an unknown service instance: #{params[:id]}")
         status 404
-        { description: "Could not bind a nonexistent instance for #{params[:id]}" }.to_json
+        { description: "Could not bind to an unknown service instance: #{params[:id]}" }.to_json
       rescue ServiceInstances::BindingAlreadyExistsError => e
         logger.info("Could not bind because of a conflict: #{e.message}")
         status 409
@@ -104,7 +104,7 @@ module RiakCsBroker
         status 200
         "{}"
       rescue ServiceInstances::InstanceNotFoundError => e
-        logger.info("Could not unbind from a nonexistent instance #{params[:id]}")
+        logger.info("Could not unbind from an unknown service instance #{params[:id]}")
         status 410
         "{}"
       rescue ServiceInstances::BindingNotFoundError => e
