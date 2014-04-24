@@ -1,0 +1,12 @@
+---
+username: admin
+password: admin
+
+ssl_validation: false
+
+riak_cs:
+  host: myhost.com
+  port: 8080
+  scheme: https
+  access_key_id: access-key-id
+  secret_access_key: secret-access-key

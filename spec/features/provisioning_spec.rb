@@ -14,8 +14,6 @@ describe "Provisioning a Riak CS service instance" do
   end
 
   context "when authenticated", :authenticated do
-    it_behaves_like "an endpoint that handles errors caused by missing config"
-
     it "returns a 201 Created HTTP response with an empty JSON" do
       make_request
       last_response.status.should == 201
@@ -54,8 +52,6 @@ describe "Deprovisioning a Riak CS service instance" do
   end
 
   context "when authenticated", :authenticated do
-    it_behaves_like "an endpoint that handles errors caused by missing config"
-
     context "when the instance exists" do
       before do
         create_instance

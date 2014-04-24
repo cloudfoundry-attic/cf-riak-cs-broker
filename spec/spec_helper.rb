@@ -4,8 +4,6 @@ require File.expand_path('../../lib/riak_cs_broker/app', __FILE__)
 
 RiakCsBroker::App.set :logger, Logger.new("/dev/null")
 
-Dotenv.overload ".env.#{ENV['RACK_ENV']}"
-
 Dir[File.dirname(__FILE__) + '/helpers/*.rb'].each { |file| require file }
 
 module RiakCsBrokerApp
@@ -29,7 +27,7 @@ RSpec.configure do |config|
   config.order = 'random'
 
   config.before(:each, :authenticated) do
-    authorize RiakCsBroker::Config.basic_auth[:username], RiakCsBroker::Config.basic_auth[:password]
+    authorize RiakCsBroker::Config.username, RiakCsBroker::Config.password
   end
 
   config.before(:each) do |c|

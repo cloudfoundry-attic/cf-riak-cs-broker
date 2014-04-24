@@ -16,8 +16,6 @@ describe "Binding a Riak CS service instance" do
 
   context "when authenticated", :authenticated do
     context "when the service instance exists" do
-      it_behaves_like "an endpoint that handles errors caused by missing config"
-
       before do
         create_instance
       end
@@ -97,8 +95,6 @@ describe "Unbinding a Riak CS service instance" do
 
   context "when authenticated", :authenticated do
     context "when the service instance exists" do
-      it_behaves_like "an endpoint that handles errors caused by missing config"
-
       before do
         create_instance
       end

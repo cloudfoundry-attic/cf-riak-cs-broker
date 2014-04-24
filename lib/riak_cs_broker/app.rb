@@ -9,11 +9,14 @@ $:.unshift(File.expand_path('../../', __FILE__))
 require 'riak_cs_broker/config'
 require 'riak_cs_broker/service_instances'
 
-Dotenv.load
 module RiakCsBroker
   class App < Sinatra::Base
     use Rack::Auth::Basic, "Cloud Foundry Riak CS Service Broker" do |username, password|
-      [username, password] == [Config.basic_auth[:username], Config.basic_auth[:password]]
+      [username, password] == [Config.username, Config.password]
+    end
+
+    configure do
+      Config.validate!
     end
 
     before do
@@ -44,7 +47,7 @@ module RiakCsBroker
           status 201
         end
         "{}"
-      rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
+      rescue RiakCsBroker::ServiceInstances::ClientError => e
         logger.error(e.message)
         logger.error(e.backtrace)
         status 500
@@ -65,7 +68,7 @@ module RiakCsBroker
         logger.info("Could not find the instance #{params[:id]}")
         status 410
         "{}"
-      rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
+      rescue RiakCsBroker::ServiceInstances::ClientError => e
         logger.error(e.message)
         logger.error(e.backtrace)
         status 500
@@ -90,7 +93,7 @@ module RiakCsBroker
         logger.error("Service unavailable: #{e.message}")
         status 503
         { description: "Could not bind because service is unavailable" }.to_json
-      rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
+      rescue RiakCsBroker::ServiceInstances::ClientError => e
         logger.error(e.message)
         logger.error(e.backtrace)
         status 500
@@ -115,7 +118,7 @@ module RiakCsBroker
         logger.error("Service unavailable: #{e.message}")
         status 503
         { description: "Could not bind because service is unavailable" }.to_json
-      rescue RiakCsBroker::ServiceInstances::ClientError, RiakCsBroker::Config::ConfigError => e
+      rescue RiakCsBroker::ServiceInstances::ClientError => e
         logger.error(e.message)
         logger.error(e.backtrace)
         status 500
@@ -124,7 +127,14 @@ module RiakCsBroker
     end
 
     def instances
-      @instances ||= ServiceInstances.new(Config.riak_cs)
+      @instances ||= ServiceInstances.new(
+        {
+          host:              Config.riak_cs.host,
+          port:              Config.riak_cs.port,
+          scheme:            Config.riak_cs.scheme,
+          access_key_id:     Config.riak_cs.access_key_id,
+          secret_access_key: Config.riak_cs.secret_access_key,
+        })
     end
 
     def logger

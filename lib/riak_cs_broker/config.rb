@@ -1,31 +1,26 @@
+ENV['SETTINGS_PATH'] ||= File.expand_path('../../../settings.yml', __FILE__)
+
 module RiakCsBroker
-  module Config
-    class ConfigError < StandardError
-    end
+  class Config < Settingslogic
 
-    def self.basic_auth
-      {
-        username: ENV['RIAK_CS_BROKER_USERNAME'],
-        password: ENV['RIAK_CS_BROKER_PASSWORD']
-      }
-    end
+    source ENV['SETTINGS_PATH']
+    load!
 
-    def self.riak_cs
-      riak_config = {
-        host: ENV['RIAK_CS_HOST'],
-        port: ENV['RIAK_CS_PORT'],
-        scheme: ENV['RIAK_CS_SCHEME'],
-        access_key_id: ENV['RIAK_CS_ACCESS_KEY_ID'],
-        secret_access_key: ENV['RIAK_CS_SECRET_ACCESS_KEY'],
-      }
-      if riak_config.values_at(:host, :port, :access_key_id, :secret_access_key).include?(nil)
-        raise ConfigError.new("Riak CS is not configured.")
-      end
-      riak_config
-    end
+    def self.validate!
+      # SettingsLogic throws an exception when a setting is accessed, but
+      # has not been populated through the yml file.  So, we will just
+      # access settings we want to validate and let SettingsLogic trow an exception
+      # if a setting is not populated.
 
-    def self.ssl_validation
-      ENV['RIAK_CS_SSL_VALIDATION'] == "true" ? true : false
+      self.riak_cs
+      self.riak_cs.host
+      self.riak_cs.port
+      self.riak_cs.access_key_id
+      self.riak_cs.secret_access_key
+
+      self.ssl_validation
+      self.username
+      self.password
     end
 
     def self.catalog

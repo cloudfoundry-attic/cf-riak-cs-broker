@@ -3,10 +3,10 @@ source "https://rubygems.org"
 ruby '1.9.3'
 
 gem 'addressable'
-gem 'dotenv', git: 'https://github.com/bkeepers/dotenv'
 gem 'fog', git: 'https://github.com/cf-blobstore-eng/fog', branch: 'development'
 gem 'sinatra'
 gem 'unf'
+gem 'settingslogic'
 
 group :test do
   gem 'rake'

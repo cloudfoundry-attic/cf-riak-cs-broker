@@ -1,10 +1,4 @@
 GIT
-  remote: https://github.com/bkeepers/dotenv
-  revision: 3602a24ce3b988e576b0f3093693948ebe205a96
-  specs:
-    dotenv (0.9.0)
-
-GIT
   remote: https://github.com/cf-blobstore-eng/fog
   revision: dc3c9e270a47519996207eba1c224d37be0fd991
   branch: development
@@ -56,6 +50,7 @@ GEM
       diff-lcs (>= 1.1.3, < 2.0)
     rspec-mocks (2.14.4)
     safe_yaml (1.0.1)
+    settingslogic (2.0.9)
     sinatra (1.4.4)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -74,12 +69,12 @@ PLATFORMS
 DEPENDENCIES
   addressable
   awesome_print
-  dotenv!
   fog!
   json_spec
   rack-test
   rake
   rspec
+  settingslogic
   sinatra
   unf
   webmock
