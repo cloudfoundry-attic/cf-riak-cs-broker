@@ -8,6 +8,7 @@ $stderr.sync=true
 $:.unshift(File.expand_path('../../', __FILE__))
 require 'riak_cs_broker/config'
 require 'riak_cs_broker/service_instances'
+require 'route_registrar'
 
 module RiakCsBroker
   class App < Sinatra::Base
@@ -17,6 +18,7 @@ module RiakCsBroker
 
     configure do
       Config.validate!
+      RouteRegistrar.register!
     end
 
     before do
@@ -145,7 +147,7 @@ module RiakCsBroker
     def sanitized_request
       {
         headers: filtered_request_headers,
-        body: request.body.string,
+        body: request.body.read,
         params: params
       }
     end

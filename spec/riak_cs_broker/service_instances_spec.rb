@@ -173,7 +173,7 @@ describe RiakCsBroker::ServiceInstances do
 
     context "when the instance exists" do
       let(:expected_creds) { {
-        uri: "https://user-key:user-secret@myhost.com:8080/service-instance-my-instance",
+        uri: "http://user-key:user-secret@riakcs.10.244.0.34.xip.io/service-instance-my-instance",
         access_key_id: "user-key",
         secret_access_key: "user-secret"
       } }

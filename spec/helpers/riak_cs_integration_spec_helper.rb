@@ -21,11 +21,11 @@ module RiakCsIntegrationSpecHelper
 
     def riak_cs_credentials
       {
-        host: ENV["RIAK_CS_HOST"],
-        port: ENV["RIAK_CS_PORT"],
-        scheme: ENV["RIAK_CS_SCHEME"] || 'http',
-        aws_access_key_id: ENV["RIAK_CS_ACCESS_KEY_ID"],
-        aws_secret_access_key: ENV["RIAK_CS_SECRET_ACCESS_KEY"]
+        host:                  RiakCsBroker::Config.riak_cs.host,
+        port:                  RiakCsBroker::Config.riak_cs.port,
+        scheme:                RiakCsBroker::Config.riak_cs.scheme,
+        aws_access_key_id:     RiakCsBroker::Config.riak_cs.access_key_id,
+        aws_secret_access_key: RiakCsBroker::Config.riak_cs.secret_access_key,
       }
     end
   end

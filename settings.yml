@@ -5,11 +5,18 @@ password: admin
 ssl_validation: false
 
 riak_cs:
-  host: myhost.com
-  port: 8080
-  scheme: https
-  access_key_id: access-key-id
-  secret_access_key: secret-access-key
+  host: riakcs.10.244.0.34.xip.io
+  port: 80
+  scheme: http
+  access_key_id: admin-key
+  secret_access_key: admin-secret
+
+message_bus_servers:
+- nats://nats:nats@127.0.0.1:4222
+
+ip: 127.0.0.1
+port: 80
+external_host: p-cs.10.244.0.34.xip.io
 
 catalog:
   services:

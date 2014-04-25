@@ -6,9 +6,6 @@ require 'webmock'
 require 'spec_helper'
 require_relative 'integration_matchers'
 
-# load the real credentials
-Dotenv.overload '.env'
-
 WebMock.after_request { |request_signature, response| $webmock_request = request_signature; $webmock_response = response }
 WebMock.allow_net_connect!
 

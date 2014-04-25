@@ -13,23 +13,52 @@ GIT
       net-ssh (>= 2.1.3)
       nokogiri (>= 1.5.11)
 
+GIT
+  remote: https://github.com/cloudfoundry/cf-registrar
+  revision: 49850ee876652a59dbd2d73dad726b3b808bb8f9
+  specs:
+    cf-registrar (1.0.1)
+      cf-message-bus
+      eventmachine (~> 1.0.0)
+      steno
+      vcap-concurrency
+
 GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.3.5)
     awesome_print (1.2.0)
     builder (3.2.2)
+    cf-message-bus (0.2.0)
+      eventmachine (~> 1.0.0)
+      nats (>= 0.5.0.beta.12, < 0.6)
+      vcap-concurrency
+      vcap-concurrency
+      yajl-ruby
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
+    daemons (1.1.9)
     diff-lcs (1.2.5)
+    eventmachine (1.0.3)
     excon (0.31.0)
+    fluent-logger (0.4.9)
+      msgpack (>= 0.4.4, < 0.6.0, != 0.5.3, != 0.5.2, != 0.5.1, != 0.5.0)
+      yajl-ruby (~> 1.0)
     formatador (0.2.4)
+    json_pure (1.8.1)
     json_spec (1.1.1)
       multi_json (~> 1.0)
       rspec (~> 2.0)
+    kgio (2.8.1)
     mime-types (2.1)
     mini_portile (0.5.2)
+    msgpack (0.5.8)
     multi_json (1.8.4)
+    nats (0.5.0.beta.12)
+      daemons (>= 1.1.9)
+      eventmachine (>= 1.0.3)
+      json_pure (>= 1.8.0)
+      thin (>= 1.5.0)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (2.8.0)
@@ -40,6 +69,7 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
+    raindrops (0.12.0)
     rake (10.1.1)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
@@ -55,13 +85,26 @@ GEM
       rack (~> 1.4)
       rack-protection (~> 1.4)
       tilt (~> 1.3, >= 1.3.4)
+    steno (1.2.4)
+      fluent-logger
+      yajl-ruby (~> 1.0)
+    thin (1.6.2)
+      daemons (>= 1.0.9)
+      eventmachine (>= 1.0.0)
+      rack (>= 1.0.0)
     tilt (1.4.1)
     unf (0.1.3)
       unf_ext
     unf_ext (0.0.6)
+    unicorn (4.8.2)
+      kgio (~> 2.6)
+      rack
+      raindrops (~> 0.7)
+    vcap-concurrency (0.1.0)
     webmock (1.17.2)
       addressable (>= 2.2.7)
       crack (>= 0.3.2)
+    yajl-ruby (1.2.0)
 
 PLATFORMS
   ruby
@@ -69,12 +112,15 @@ PLATFORMS
 DEPENDENCIES
   addressable
   awesome_print
+  cf-registrar!
   fog!
   json_spec
+  nats
   rack-test
   rake
   rspec
   settingslogic
   sinatra
   unf
+  unicorn
   webmock
