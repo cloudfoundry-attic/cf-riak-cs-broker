@@ -1,3 +1,9 @@
+require 'webmock'
+require 'codeclimate-test-reporter'
+CodeClimate::TestReporter.start
+WebMock.disable_net_connect!(allow: 'codeclimate.com')
+
+
 ENV["RACK_ENV"] = "test"
 
 require File.expand_path('../../lib/riak_cs_broker/app', __FILE__)
