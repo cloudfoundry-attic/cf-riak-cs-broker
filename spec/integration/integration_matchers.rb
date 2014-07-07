@@ -52,7 +52,7 @@ RSpec::Matchers.define :include_a_writeable_bucket_uri_at do |json_path|
     end
   end
 
-  failure_message_for_should do |binding_response|
+  failure_message do |binding_response|
     message = "expected #{binding_response} to contain a writeable bucket URI at #{json_path}"
     if @bad_json_error
       message << " but could not find the URL: #{@bad_json_error.message}"
@@ -81,7 +81,7 @@ RSpec::Matchers.define :include_a_readable_bucket_uri_at do |json_path|
     end
   end
 
-  failure_message_for_should do |binding_response|
+  failure_message do |binding_response|
     message = "expected #{binding_response} to contain a readable bucket URI at #{json_path}"
     if @bad_json_error
       message << " but could not find the URL: #{@bad_json_error.message}"
@@ -124,7 +124,7 @@ class RemoveAccessToRiakCs
     end
   end
 
-  def failure_message_for_should
+  def failure_message
     message = "expected block to remove existing Riak CS access"
     message << " but never got access in the first place" if @writing_error
     message

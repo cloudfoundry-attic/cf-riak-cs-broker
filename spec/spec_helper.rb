@@ -24,8 +24,6 @@ RSpec.configure do |config|
   config.include RequestSpecHelpers
   config.include RiakCsBrokerApp
 
-  config.treat_symbols_as_metadata_keys_with_true_values = true
-
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.
@@ -37,7 +35,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do |c|
-    if example.metadata[:integration].nil?
+    if c.metadata[:integration].nil?
       Fog.mock!
       Fog::Mock.reset
     end
