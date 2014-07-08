@@ -46,3 +46,5 @@ catalog:
       name: bucket
     tags:
     - blobstore
+
+syslog_progname: vcap.riak-cs-broker

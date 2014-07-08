@@ -21,6 +21,7 @@ module RiakCsBroker
       self.ssl_validation
       self.username
       self.password
+      self.syslog_progname
     end
   end
 end

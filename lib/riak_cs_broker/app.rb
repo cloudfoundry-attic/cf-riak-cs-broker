@@ -181,5 +181,5 @@ module RiakCsBroker
     end
   end
 
-  App.set :logger, MultiLogger.new('vcap.riak-cs-broker', $stderr)
+  App.set :logger, MultiLogger.new(Config.syslog_progname, $stderr)
 end
