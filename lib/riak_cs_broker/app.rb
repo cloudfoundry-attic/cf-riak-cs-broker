@@ -9,6 +9,7 @@ $:.unshift(File.expand_path('../../', __FILE__))
 require 'riak_cs_broker/config'
 require 'riak_cs_broker/service_instances'
 require 'route_registrar'
+require 'multi_logger'
 
 module RiakCsBroker
   class App < Sinatra::Base
@@ -180,5 +181,5 @@ module RiakCsBroker
     end
   end
 
-  App.set :logger, Logger.new($stderr)
+  App.set :logger, MultiLogger.new('vcap.riak-cs-broker', $stderr)
 end
