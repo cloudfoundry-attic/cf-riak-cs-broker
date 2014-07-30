@@ -23,6 +23,10 @@ group :development, :test do
   gem 'webmock'
 end
 
+group :development do
+  gem 'roodi'
+end
+
 group :production do
   gem 'unicorn'
 end
