@@ -62,18 +62,6 @@ describe "Deprovisioning a Riak CS service instance" do
         expect(last_response.status).to eq(200)
         expect(last_response.body).to be_json_eql("{}")
       end
-
-      context "and deprovisioning a non-empty instance" do
-        before do
-          allow_any_instance_of(RiakCsBroker::ServiceInstances).to receive(:remove).and_raise(RiakCsBroker::ServiceInstances::InstanceNotEmptyError)
-        end
-
-        it "returns a 409 Conflict HTTP response with an error message" do
-          make_request
-          expect(last_response.status).to eq(409)
-          expect(last_response.body).to be_json_eql({ description: "Could not unprovision because instance is not empty"}.to_json)
-        end
-      end
     end
 
     context "when the instance does not exist" do

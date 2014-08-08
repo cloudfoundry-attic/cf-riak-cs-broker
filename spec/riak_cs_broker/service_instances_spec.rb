@@ -99,13 +99,16 @@ describe RiakCsBroker::ServiceInstances do
 
       context "when the instance is not empty" do
         before do
-          allow_any_instance_of(Fog::Storage::AWS::Mock).to receive_message_chain(:directories, :get).and_return(:anything)
-          allow_any_instance_of(Fog::Storage::AWS::Mock).to receive_message_chain(:directories, :create)
-          allow_any_instance_of(Fog::Storage::AWS::Mock).to receive_message_chain(:directories, :destroy).and_raise(Excon::Errors::Conflict.new(nil))
+          bucket_name = RiakCsBroker::ServiceInstances.bucket_name('my-instance')
+          service_instances.storage_client.directories.get(bucket_name).files.create(
+            key: 'some-key',
+            body: 'value',
+            public: true
+          )
         end
 
-        it "raises InstanceNotEmptyError" do
-          expect { subject }.to raise_error(RiakCsBroker::ServiceInstances::InstanceNotEmptyError)
+        it "removes the requested instance" do
+          expect { subject }.to change { service_instances.include?("my-instance") }.from(true).to(false)
         end
       end
 

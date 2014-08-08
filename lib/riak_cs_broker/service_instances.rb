@@ -65,7 +65,10 @@ module RiakCsBroker
       begin
         @storage_client.directories.destroy(self.class.bucket_name(instance_id))
       rescue Excon::Errors::Conflict
-        raise InstanceNotEmptyError
+        @storage_client.directories.get(self.class.bucket_name(instance_id)).files.all.each do |file|
+          file.destroy
+        end
+        @storage_client.directories.destroy(self.class.bucket_name(instance_id))
       rescue Excon::Errors::Timeout
         raise ServiceUnavailableError
       rescue => e
