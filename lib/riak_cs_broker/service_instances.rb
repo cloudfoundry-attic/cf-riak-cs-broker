@@ -8,8 +8,6 @@ module RiakCsBroker
 
     class ClientError < StandardError
     end
-    class InstanceNotEmptyError < ClientError
-    end
     class InstanceNotFoundError < ClientError
     end
     class BindingAlreadyExistsError < ClientError
