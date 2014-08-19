@@ -35,9 +35,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do |c|
-    if c.metadata[:integration].nil?
       Fog.mock!
       Fog::Mock.reset
-    end
   end
 end

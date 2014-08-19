@@ -23,9 +23,7 @@ A Bosh release for Riak and Riak CS can be found [here](https://github.com/cloud
 
 ### Testing
 
-To run all non-integration specs: `rake spec`
-
-To run integration tests that actually talk to the Riak CS cluster specified by `settings.yml`: `rake spec:integration`
+To run all specs: `rake`
 
 ### Usage 
 
