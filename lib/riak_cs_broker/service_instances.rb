@@ -61,8 +61,6 @@ module RiakCsBroker
     def remove(instance_id)
       raise InstanceNotFoundError unless include?(instance_id)
       begin
-        @storage_client.directories.destroy(self.class.bucket_name(instance_id))
-      rescue Excon::Errors::Conflict
         @storage_client.directories.get(self.class.bucket_name(instance_id)).files.all.each do |file|
           file.destroy
         end
