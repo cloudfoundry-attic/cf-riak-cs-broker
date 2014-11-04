@@ -2,7 +2,7 @@
 
 ### Build Status
 
-[![Build Status](https://travis-ci.org/cloudfoundry-incubator/cf-riak-cs-broker.png?branch=master)](https://travis-ci.org/cloudfoundry-incubator/cf-riak-cs-broker) (master)
+[![Build Status](https://travis-ci.org/cloudfoundry/cf-riak-cs-broker.png?branch=master)](https://travis-ci.org/cloudfoundry/cf-riak-cs-broker) (master)
 
 
 ### Description
