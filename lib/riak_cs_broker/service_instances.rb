@@ -169,8 +169,9 @@ module RiakCsBroker
       grantee_hash             = { 'ID' => user_id }
       write_grant              = { 'Permission' => 'WRITE', 'Grantee' => grantee_hash }
       read_grant               = { 'Permission' => 'READ', 'Grantee' => grantee_hash }
+      read_acp_grant           = { 'Permission' => 'READ_ACP', 'Grantee' => grantee_hash }
       acl                      = @storage_client.get_bucket_acl(bucket_name).body
-      acl['AccessControlList'] += [read_grant, write_grant]
+      acl['AccessControlList'] += [read_grant, write_grant, read_acp_grant]
       @storage_client.put_bucket_acl(bucket_name, acl)
     end
 
