@@ -3,3 +3,4 @@ config/broker.yml
 spec/config/broker.yml
 manifest.yml
 .env
+.idea/
