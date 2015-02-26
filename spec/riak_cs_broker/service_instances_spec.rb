@@ -204,6 +204,7 @@ describe RiakCsBroker::ServiceInstances do
           acl = service_instances.storage_client.get_bucket_acl(described_class.bucket_name("my-instance")).body
           expect(acl).to have_grant_for("user-id").with_permission("READ")
           expect(acl).to have_grant_for("user-id").with_permission("WRITE")
+          expect(acl).to have_grant_for("user-id").with_permission("READ_ACP")
         end
       end
 
