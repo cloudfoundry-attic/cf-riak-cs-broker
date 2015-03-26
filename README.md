@@ -1,4 +1,4 @@
-# Riak CS Service Broker for Cloud Foundry 
+# Riak CS Service Broker for Cloud Foundry
 
 ### Build Status
 
@@ -15,17 +15,16 @@ Binding an application creates unique credentials for that application to access
 
 Based on [the Riak service broker by @hectcastro](https://github.com/hectcastro/cf-riak-service-broker).
 
-### Prerequisites 
+### Prerequisites
 
 This service broker must be configured to access a Riak CS cluster.
-You can use Bosh to deploy such a cluster alongside Cloud Foundry, or it can be deployed locally by [bosh-lite](https://github.com/cloudfoundry/bosh-lite) for development purposes.
-A Bosh release for Riak and Riak CS can be found [here](https://github.com/cloudfoundry-incubator/cf-riak-cs-release).
+You can use Bosh to deploy such a cluster alongside Cloud Foundry, or it can be deployed locally by [bosh-lite](https://github.com/cloudfoundry/bosh-lite) for development purposes. Deploying this as a standalone application to cloud foundry (e.g. via `cf push`) is not supported. A Bosh release for Riak and Riak CS can be found [here](https://github.com/cloudfoundry-incubator/cf-riak-cs-release).
 
 ### Testing
 
 To run all specs: `rake`
 
-### Usage 
+### Usage
 
 Configure the `settings.yml` file for your environment.
 
