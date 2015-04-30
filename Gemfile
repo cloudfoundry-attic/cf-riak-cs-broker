@@ -1,7 +1,8 @@
 source "https://rubygems.org"
 
 gem 'addressable'
-gem 'fog', git: 'https://github.com/cf-blobstore-eng/fog', branch: 'development'
+gem 'fog'
+gem 'fog-riakcs'
 gem 'sinatra'
 gem 'unf'
 gem 'settingslogic'
