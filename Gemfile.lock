@@ -1,4 +1,19 @@
 GIT
+  remote: https://github.com/cf-blobstore-eng/fog
+  revision: dc3c9e270a47519996207eba1c224d37be0fd991
+  branch: development
+  specs:
+    fog (1.19.0)
+      builder
+      excon (~> 0.31.0)
+      formatador (~> 0.2.0)
+      mime-types
+      multi_json (~> 1.0)
+      net-scp (~> 1.1)
+      net-ssh (>= 2.1.3)
+      nokogiri (>= 1.5.11)
+
+GIT
   remote: https://github.com/cloudfoundry/cf-registrar
   revision: 49850ee876652a59dbd2d73dad726b3b808bb8f9
   specs:
@@ -11,7 +26,6 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    CFPropertyList (2.3.1)
     addressable (2.3.6)
     awesome_print (1.2.0)
     builder (3.2.2)
@@ -28,111 +42,20 @@ GEM
     diff-lcs (1.2.5)
     docile (1.1.5)
     eventmachine (1.0.7)
-    excon (0.45.3)
+    excon (0.31.0)
     fission (0.5.0)
       CFPropertyList (~> 2.2)
     fluent-logger (0.4.9)
       msgpack (>= 0.4.4, < 0.6.0, != 0.5.3, != 0.5.2, != 0.5.1, != 0.5.0)
       yajl-ruby (~> 1.0)
-    fog (1.29.0)
-      fog-atmos
-      fog-aws (~> 0.0)
-      fog-brightbox (~> 0.4)
-      fog-core (~> 1.27, >= 1.27.4)
-      fog-ecloud
-      fog-json
-      fog-local
-      fog-powerdns (>= 0.1.1)
-      fog-profitbricks
-      fog-radosgw (>= 0.0.2)
-      fog-riakcs
-      fog-sakuracloud (>= 0.0.4)
-      fog-serverlove
-      fog-softlayer
-      fog-storm_on_demand
-      fog-terremark
-      fog-vmfusion
-      fog-voxel
-      fog-xml (~> 0.1.1)
-      ipaddress (~> 0.5)
-      nokogiri (~> 1.5, >= 1.5.11)
-    fog-atmos (0.1.0)
-      fog-core
-      fog-xml
-    fog-aws (0.1.2)
-      fog-core (~> 1.27)
-      fog-json (~> 1.0)
-      fog-xml (~> 0.1)
-      ipaddress (~> 0.8)
-    fog-brightbox (0.7.1)
-      fog-core (~> 1.22)
-      fog-json
-      inflecto (~> 0.0.2)
-    fog-core (1.30.0)
-      builder
-      excon (~> 0.45)
-      formatador (~> 0.2)
-      mime-types
-      net-scp (~> 1.1)
-      net-ssh (>= 2.1.3)
-    fog-ecloud (0.1.1)
-      fog-core
-      fog-xml
-    fog-json (1.0.1)
-      fog-core (~> 1.0)
-      multi_json (~> 1.0)
-    fog-local (0.2.1)
-      fog-core (~> 1.27)
-    fog-powerdns (0.1.1)
-      fog-core (~> 1.27)
-      fog-json (~> 1.0)
-      fog-xml (~> 0.1)
-    fog-profitbricks (0.0.2)
-      fog-core
-      fog-xml
-      nokogiri
-    fog-radosgw (0.0.4)
-      fog-core (>= 1.21.0)
-      fog-json
-      fog-xml (>= 0.0.1)
-    fog-riakcs (0.1.0)
-      fog-core
-      fog-json
-      fog-xml
-    fog-sakuracloud (1.0.1)
-      fog-core
-      fog-json
-    fog-serverlove (0.1.2)
-      fog-core
-      fog-json
-    fog-softlayer (0.4.5)
-      fog-core
-      fog-json
-    fog-storm_on_demand (0.1.1)
-      fog-core
-      fog-json
-    fog-terremark (0.1.0)
-      fog-core
-      fog-xml
-    fog-vmfusion (0.1.0)
-      fission
-      fog-core
-    fog-voxel (0.1.0)
-      fog-core
-      fog-xml
-    fog-xml (0.1.2)
-      fog-core
-      nokogiri (~> 1.5, >= 1.5.11)
     formatador (0.2.5)
-    inflecto (0.0.2)
-    ipaddress (0.8.0)
     json_pure (1.8.1)
     json_spec (1.1.2)
       multi_json (~> 1.0)
       rspec (>= 2.0, < 4.0)
     kgio (2.9.2)
-    mime-types (2.5)
-    mini_portile (0.6.2)
+    mime-types (2.3)
+    mini_portile (0.6.0)
     msgpack (0.5.8)
     multi_json (1.10.1)
     nats (0.5.0.beta.14)
@@ -142,9 +65,9 @@ GEM
       thin (>= 1.6.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
-    net-ssh (2.9.2)
-    nokogiri (1.6.6.2)
-      mini_portile (~> 0.6.0)
+    net-ssh (2.9.1)
+    nokogiri (1.6.2.1)
+      mini_portile (= 0.6.0)
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
@@ -210,8 +133,7 @@ DEPENDENCIES
   awesome_print
   cf-registrar!
   codeclimate-test-reporter
-  fog
-  fog-riakcs
+  fog!
   json_spec
   nats
   rack-test
