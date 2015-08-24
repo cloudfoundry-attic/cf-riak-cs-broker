@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+ruby '2.2.3'
+
 gem 'addressable'
 gem 'fog', git: 'https://github.com/cf-blobstore-eng/fog', branch: 'development'
 gem 'sinatra'
