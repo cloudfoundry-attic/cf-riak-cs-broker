@@ -5,7 +5,7 @@ password: admin
 ssl_validation: false
 
 riak_cs:
-  host: riakcs.10.244.0.34.xip.io
+  host: riakcs.bosh-lite.com
   port: 80
   scheme: http
   access_key_id: admin-key
@@ -16,7 +16,7 @@ message_bus_servers:
 
 ip: 127.0.0.1
 port: 80
-external_host: p-cs.10.244.0.34.xip.io
+external_host: p-cs.bosh-lite.com
 
 catalog:
   services:
